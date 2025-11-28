@@ -93,33 +93,39 @@ def event_delete(request, pk):
 
 def event_qr_code(request, pk):
     """Generate and return QR code image for an event (public access)."""
-    event = get_object_or_404(Event, pk=pk)
-    
-    # Create QR code with event ID
-    qr = qrcode.QRCode(
-        version=1,
-        error_correction=qrcode.constants.ERROR_CORRECT_L,
-        box_size=10,
-        border=4,
-    )
-    
-    # QR code data contains the event ID
-    qr_data = str(event.pk)
-    qr.add_data(qr_data)
-    qr.make(fit=True)
-    
-    # Create QR code image
-    img = qr.make_image(fill_color="black", back_color="white")
-    
-    # Save to bytes
-    buffer = io.BytesIO()
-    img.save(buffer, format='PNG')
-    buffer.seek(0)
-    
-    # Return as HTTP response
-    response = HttpResponse(buffer.getvalue(), content_type='image/png')
-    response['Content-Disposition'] = f'inline; filename="event_{event.pk}_qr.png"'
-    return response
+    try:
+        event = get_object_or_404(Event, pk=pk)
+        
+        # Create QR code with event check-in URL
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
+        )
+        
+        # QR code data contains the event check-in URL
+        from django.urls import reverse
+        qr_data = request.build_absolute_uri(reverse('attendance:check_in') + f'?event={event.pk}')
+        qr.add_data(qr_data)
+        qr.make(fit=True)
+        
+        # Create QR code image
+        img = qr.make_image(fill_color="black", back_color="white")
+        
+        # Save to bytes
+        buffer = io.BytesIO()
+        img.save(buffer, format='PNG')
+        buffer.seek(0)
+        
+        # Return as HTTP response
+        response = HttpResponse(buffer.getvalue(), content_type='image/png')
+        response['Content-Disposition'] = f'inline; filename="event_{event.pk}_qr.png"'
+        return response
+    except Exception as e:
+        # If QR code generation fails, return error message
+        from django.http import HttpResponse
+        return HttpResponse(f"Error generating QR code: {str(e)}", content_type='text/plain', status=500)
 
 
 def event_qr_scan(request, pk):
