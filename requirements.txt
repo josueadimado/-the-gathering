@@ -5,7 +5,7 @@ Django==4.2.7
 psycopg2-binary==2.9.9  # PostgreSQL adapter (for production)
 
 # Image Processing (for QR codes and profile pictures)
-Pillow==10.1.0
+Pillow==10.4.0
 
 # QR Code Generation
 qrcode[pil]==7.4.2
