@@ -6,10 +6,55 @@
     <title>{% block title %}The Gathering{% endblock %}</title>
     
     {% load static %}
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="{% block meta_description %}The Gathering - Join our community events, track attendance, and stay connected. Register for upcoming gatherings and receive event reminders.{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}The Gathering, community events, event registration, attendance tracking, church events, religious gatherings{% endblock %}">
+    <meta name="author" content="The Gathering">
+    <meta name="robots" content="{% block meta_robots %}index, follow{% endblock %}">
+    <meta name="language" content="English">
+    <meta name="revisit-after" content="7 days">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{% block canonical_url %}https://thegathering.comecenters.com{% endblock %}">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:url" content="{% block og_url %}https://thegathering.comecenters.com{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}The Gathering - Community Events & Attendance{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Join our community events, track attendance, and stay connected. Register for upcoming gatherings and receive event reminders.{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}https://thegathering.comecenters.com{% static 'images/login/The gathering 1.png' %}{% endblock %}">
+    <meta property="og:site_name" content="The Gathering">
+    <meta property="og:locale" content="en_US">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{% block twitter_url %}https://thegathering.comecenters.com{% endblock %}">
+    <meta name="twitter:title" content="{% block twitter_title %}The Gathering - Community Events & Attendance{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Join our community events, track attendance, and stay connected.{% endblock %}">
+    <meta name="twitter:image" content="{% block twitter_image %}https://thegathering.comecenters.com{% static 'images/login/The gathering 1.png' %}{% endblock %}">
+    
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{% static 'images/login/The gathering 1.png' %}">
     <link rel="shortcut icon" type="image/png" href="{% static 'images/login/The gathering 1.png' %}">
     <link rel="apple-touch-icon" href="{% static 'images/login/The gathering 1.png' %}">
+    
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "{% block schema_type %}Organization{% endblock %}",
+        "name": "The Gathering",
+        "url": "https://thegathering.comecenters.com",
+        "logo": "https://thegathering.comecenters.com/static/images/login/The gathering 1.png",
+        "description": "{% block schema_description %}Community events, attendance tracking, and event management system{% endblock %}",
+        "sameAs": [
+            {% block social_links %}{% endblock %}
+        ]
+    }
+    </script>
+    
+    {% block extra_meta %}{% endblock %}
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
