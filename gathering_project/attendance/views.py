@@ -17,6 +17,15 @@ def self_check_in(request):
     error_message = None
     success_message = None
     
+    # Get event from query parameter (from QR code)
+    event_from_qr = None
+    event_id_param = request.GET.get('event')
+    if event_id_param:
+        try:
+            event_from_qr = Event.objects.get(pk=event_id_param, is_active=True)
+        except (Event.DoesNotExist, ValueError):
+            pass
+    
     # Get upcoming events
     upcoming_events = Event.objects.filter(
         is_active=True,
@@ -40,7 +49,10 @@ def self_check_in(request):
         event_date=next_saturday
     ).order_by('event_time').first()
     
-    if saturday_events:
+    # Priority: event from QR code > Saturday event > first upcoming event
+    if event_from_qr:
+        default_event = event_from_qr
+    elif saturday_events:
         default_event = saturday_events
     elif upcoming_events.exists():
         # If no Saturday event found, use the first upcoming event
