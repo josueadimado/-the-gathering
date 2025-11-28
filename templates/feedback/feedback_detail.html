@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Feedback Details - The Gathering{% endblock %}
+
+{% block page_title %}Feedback Details{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{% url 'feedback:list' %}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Feedback List
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="badge 
+                    {% if feedback.feedback_type == 'suggestion' %}bg-info
+                    {% elif feedback.feedback_type == 'prayer_request' %}bg-success
+                    {% elif feedback.feedback_type == 'complaint' %}bg-warning text-dark
+                    {% else %}bg-secondary
+                    {% endif %}">
+                    {{ feedback.get_feedback_type_display }}
+                </span>
+                <span class="badge 
+                    {% if feedback.status == 'new' %}bg-warning text-dark
+                    {% elif feedback.status == 'reviewed' %}bg-info
+                    {% elif feedback.status == 'addressed' %}bg-success
+                    {% else %}bg-secondary
+                    {% endif %}">
+                    {{ feedback.get_status_display }}
+                </span>
+            </div>
+            <div class="card-body">
+                <h5>Message</h5>
+                <p>{{ feedback.message }}</p>
+                
+                <hr>
+                
+                <dl class="row">
+                    <dt class="col-sm-4">Submitted:</dt>
+                    <dd class="col-sm-8">{{ feedback.submitted_at|date:"F d, Y g:i A" }}</dd>
+                    
+                    {% if feedback.person %}
+                    <dt class="col-sm-4">From:</dt>
+                    <dd class="col-sm-8">
+                        <a href="{% url 'people:detail' feedback.person.pk %}">
+                            {{ feedback.person.get_full_name }}
+                        </a>
+                    </dd>
+                    {% endif %}
+                    
+                    {% if feedback.reviewed_at %}
+                    <dt class="col-sm-4">Reviewed:</dt>
+                    <dd class="col-sm-8">{{ feedback.reviewed_at|date:"F d, Y g:i A" }}</dd>
+                    {% endif %}
+                    
+                    {% if feedback.reviewed_by %}
+                    <dt class="col-sm-4">Reviewed By:</dt>
+                    <dd class="col-sm-8">{{ feedback.reviewed_by.get_full_name }}</dd>
+                    {% endif %}
+                    
+                    {% if feedback.admin_notes %}
+                    <dt class="col-sm-4">Admin Notes:</dt>
+                    <dd class="col-sm-8">{{ feedback.admin_notes }}</dd>
+                    {% endif %}
+                </dl>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h6 class="mb-0">Update Status</h6>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{% url 'feedback:update_status' feedback.pk %}">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Status</label>
+                        <select name="status" id="status" class="form-select">
+                            <option value="new" {% if feedback.status == 'new' %}selected{% endif %}>New</option>
+                            <option value="reviewed" {% if feedback.status == 'reviewed' %}selected{% endif %}>Reviewed</option>
+                            <option value="addressed" {% if feedback.status == 'addressed' %}selected{% endif %}>Addressed</option>
+                            <option value="closed" {% if feedback.status == 'closed' %}selected{% endif %}>Closed</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="admin_notes" class="form-label">Admin Notes</label>
+                        <textarea name="admin_notes" id="admin_notes" class="form-control" rows="4">{{ feedback.admin_notes }}</textarea>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Update Status</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

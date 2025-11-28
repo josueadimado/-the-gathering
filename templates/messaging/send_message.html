@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Send Message - {{ template.name }} - The Gathering{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="bi bi-send"></i> Send Message</h1>
+                <a href="{% url 'messaging:template_detail' template.pk %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Template
+                </a>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">Send Message Using: {{ template.name }}</h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" id="sendMessageForm">
+                                {% csrf_token %}
+
+                                <div class="mb-3">
+                                    <label for="{{ form.template.id_for_label }}" class="form-label">Template *</label>
+                                    {{ form.template }}
+                                    {% if form.template.errors %}
+                                        <div class="text-danger small mt-1">{{ form.template.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="{{ form.event.id_for_label }}" class="form-label">Event (Optional)</label>
+                                    {{ form.event }}
+                                    {% if form.event.errors %}
+                                        <div class="text-danger small mt-1">{{ form.event.errors }}</div>
+                                    {% endif %}
+                                    <small class="form-text text-muted">Select an event to include event details in the message</small>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="{{ form.people.id_for_label }}" class="form-label">Select Recipients *</label>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <small class="text-muted">Total active people: {{ total_people }}</small>
+                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="selectAll()">
+                                            <i class="bi bi-check-all"></i> Select All
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="deselectAll()">
+                                            <i class="bi bi-x-circle"></i> Deselect All
+                                        </button>
+                                    </div>
+                                    {{ form.people }}
+                                    {% if form.people.errors %}
+                                        <div class="text-danger small mt-1">{{ form.people.errors }}</div>
+                                    {% endif %}
+                                    <small class="form-text text-muted">Hold Ctrl (Cmd on Mac) to select multiple people</small>
+                                </div>
+
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle"></i> 
+                                    <strong>Message Type:</strong> {{ template.get_message_type_display }}<br>
+                                    <strong>Selected:</strong> <span id="selectedCount">0</span> people
+                                </div>
+
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-success" id="sendButton">
+                                        <i class="bi bi-send-fill"></i> Send Messages
+                                    </button>
+                                    <a href="{% url 'messaging:template_detail' template.pk %}" class="btn btn-secondary">Cancel</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header bg-info text-white">
+                            <h6 class="mb-0">Template Preview</h6>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Name:</strong> {{ template.name }}</p>
+                            <p><strong>Type:</strong> {{ template.get_message_type_display }}</p>
+                            {% if template.subject %}
+                            <p><strong>Subject:</strong> {{ template.subject }}</p>
+                            {% endif %}
+                            <div class="message-preview p-3 bg-light border rounded mt-3">
+                                <small>{{ template.body|linebreaks }}</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mt-3">
+                        <div class="card-header bg-warning text-dark">
+                            <h6 class="mb-0">Important Notes</h6>
+                        </div>
+                        <div class="card-body">
+                            <ul class="small mb-0">
+                                <li>Make sure Twilio credentials are configured in settings</li>
+                                <li>Phone numbers must be in E.164 format (+1234567890)</li>
+                                <li>Messages will be logged for tracking</li>
+                                <li>Check message logs to see delivery status</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Update selected count
+    const peopleSelect = document.getElementById('id_people');
+    
+    function updateCount() {
+        const selected = peopleSelect.selectedOptions.length;
+        document.getElementById('selectedCount').textContent = selected;
+    }
+    
+    peopleSelect.addEventListener('change', updateCount);
+    updateCount(); // Initial count
+    
+    // Select all function
+    function selectAll() {
+        for (let i = 0; i < peopleSelect.options.length; i++) {
+            peopleSelect.options[i].selected = true;
+        }
+        updateCount();
+    }
+    
+    // Deselect all function
+    function deselectAll() {
+        for (let i = 0; i < peopleSelect.options.length; i++) {
+            peopleSelect.options[i].selected = false;
+        }
+        updateCount();
+    }
+    
+    // Confirm before sending
+    document.getElementById('sendMessageForm').addEventListener('submit', function(e) {
+        const selected = peopleSelect.selectedOptions.length;
+        if (selected === 0) {
+            e.preventDefault();
+            alert('Please select at least one recipient.');
+            return false;
+        }
+        
+        if (!confirm(`Are you sure you want to send this message to ${selected} person(s)?`)) {
+            e.preventDefault();
+            return false;
+        }
+        
+        // Disable button to prevent double submission
+        document.getElementById('sendButton').disabled = true;
+        document.getElementById('sendButton').innerHTML = '<i class="bi bi-hourglass-split"></i> Sending...';
+    });
+</script>
+{% endblock %}
+

@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - The Gathering{% endblock %}
+
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1 class="display-5">Dashboard</h1>
+        <p class="text-muted">Welcome back, {{ user.username }}!</p>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-2">Total People</h6>
+                        <h2 class="mb-0">{{ total_people }}</h2>
+                    </div>
+                    <div class="fs-1">👥</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-2">Total Events</h6>
+                        <h2 class="mb-0">{{ total_events }}</h2>
+                    </div>
+                    <div class="fs-1">📅</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-2">Total Attendance</h6>
+                        <h2 class="mb-0">{{ total_attendance }}</h2>
+                    </div>
+                    <div class="fs-1">✓</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-2">Pending Feedback</h6>
+                        <h2 class="mb-0">{{ pending_feedback }}</h2>
+                    </div>
+                    <div class="fs-1">💬</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity Row -->
+<div class="row">
+    <!-- Upcoming Events -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">📅 Upcoming Events</h5>
+            </div>
+            <div class="card-body">
+                {% if upcoming_events %}
+                    <div class="list-group list-group-flush">
+                        {% for event in upcoming_events %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">{{ event.name }}</h6>
+                                    <small class="text-muted">
+                                        {{ event.event_date }} at {{ event.event_time }}
+                                        {% if event.location %}
+                                        <br>📍 {{ event.location }}
+                                        {% endif %}
+                                    </small>
+                                </div>
+                                <span class="badge bg-primary">{{ event.get_event_type_display }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">No upcoming events scheduled.</p>
+                {% endif %}
+                <div class="mt-3">
+                    <a href="{% url 'events:list' %}" class="btn btn-sm btn-outline-primary">View All Events</a>
+                    <a href="{% url 'events:create' %}" class="btn btn-sm btn-primary">Create Event</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Registrations -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">👥 Recent Registrations</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_people %}
+                    <div class="list-group list-group-flush">
+                        {% for person in recent_people %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">{{ person.get_full_name }}</h6>
+                                    <small class="text-muted">
+                                        📞 {{ person.phone_number }}
+                                        {% if person.email %}
+                                        <br>✉️ {{ person.email }}
+                                        {% endif %}
+                                        <br>📅 Registered: {{ person.date_registered|date:"M d, Y" }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">No recent registrations.</p>
+                {% endif %}
+                <div class="mt-3">
+                    <a href="{% url 'people:list' %}" class="btn btn-sm btn-outline-success">View All People</a>
+                    <a href="{% url 'people:admin_register' %}" class="btn btn-sm btn-success">Register New Person</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Stats Row -->
+<div class="row mt-4">
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">📊 Recent Activity</h5>
+                <p class="mb-1"><strong>{{ recent_registrations }}</strong> new registrations in the last 30 days</p>
+                <p class="mb-0"><strong>{{ recent_attendance }}</strong> check-ins in the last 7 days</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">⚡ Quick Actions</h5>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'attendance:check_in' %}" class="btn btn-primary">Check-In Attendee</a>
+                    <a href="{% url 'feedback:list' %}" class="btn btn-warning">View Feedback</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Analytics Section -->
+<div class="row mt-4">
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-graph-up"></i> Analytics & Reports</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="card border-primary">
+                            <div class="card-body">
+                                <h6 class="card-title"><i class="bi bi-check-circle"></i> Attendance Analytics</h6>
+                                <p class="card-text text-muted small">View detailed attendance statistics, trends, and event performance.</p>
+                                <a href="{% url 'dashboard:attendance_analytics' %}" class="btn btn-primary btn-sm">
+                                    <i class="bi bi-arrow-right"></i> View Analytics
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card border-success">
+                            <div class="card-body">
+                                <h6 class="card-title"><i class="bi bi-people"></i> People Analytics</h6>
+                                <p class="card-text text-muted small">Track registration trends, active members, and engagement metrics.</p>
+                                <a href="{% url 'dashboard:people_analytics' %}" class="btn btn-success btn-sm">
+                                    <i class="bi bi-arrow-right"></i> View Analytics
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

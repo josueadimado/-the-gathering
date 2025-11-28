@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ action }} Message Template - The Gathering{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="bi bi-envelope-paper"></i> {{ action }} Message Template</h1>
+                <a href="{% url 'messaging:template_list' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Templates
+                </a>
+            </div>
+
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Template Information</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.name.id_for_label }}" class="form-label">Template Name *</label>
+                                {{ form.name }}
+                                {% if form.name.errors %}
+                                    <div class="text-danger small mt-1">{{ form.name.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.message_type.id_for_label }}" class="form-label">Message Type *</label>
+                                {{ form.message_type }}
+                                {% if form.message_type.errors %}
+                                    <div class="text-danger small mt-1">{{ form.message_type.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3" id="subjectField">
+                            <label for="{{ form.subject.id_for_label }}" class="form-label">Subject</label>
+                            {{ form.subject }}
+                            {% if form.subject.errors %}
+                                <div class="text-danger small mt-1">{{ form.subject.errors }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Required for email, optional for SMS/WhatsApp</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.body.id_for_label }}" class="form-label">Message Body *</label>
+                            {{ form.body }}
+                            {% if form.body.errors %}
+                                <div class="text-danger small mt-1">{{ form.body.errors }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">
+                                Available variables: <code>{name}</code>, <code>{event_name}</code>, <code>{event_date}</code>, <code>{event_time}</code>, <code>{event_location}</code>, <code>{event_topic}</code>
+                            </small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.variables.id_for_label }}" class="form-label">Variables (Optional)</label>
+                            {{ form.variables }}
+                            {% if form.variables.errors %}
+                                <div class="text-danger small mt-1">{{ form.variables.errors }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Comma-separated list of variables used in this template</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                {{ form.is_active }}
+                                <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                                    Active Template
+                                </label>
+                            </div>
+                            {% if form.is_active.errors %}
+                                <div class="text-danger small mt-1">{{ form.is_active.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Save Template
+                            </button>
+                            <a href="{% url 'messaging:template_list' %}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Show/hide subject field based on message type
+    document.addEventListener('DOMContentLoaded', function() {
+        const messageType = document.getElementById('id_message_type');
+        const subjectField = document.getElementById('subjectField');
+        
+        function toggleSubject() {
+            if (messageType.value === 'email') {
+                subjectField.style.display = 'block';
+                document.getElementById('id_subject').required = true;
+            } else {
+                subjectField.style.display = 'block'; // Keep visible but not required
+                document.getElementById('id_subject').required = false;
+            }
+        }
+        
+        messageType.addEventListener('change', toggleSubject);
+        toggleSubject(); // Run on page load
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,434 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Register - The Gathering{% endblock %}
+
+{% block extra_css %}
+<!-- International Telephone Input CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.3/build/css/intlTelInput.css">
+
+<style>
+    :root {
+        --primary-purple: #6B46C1;
+        --primary-blue: #0EA5E9;
+        --primary-teal: #14B8A6;
+    }
+    
+    .register-page {
+        min-height: 80vh;
+        padding: 3rem 0;
+        background: white;
+    }
+    
+    .register-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    .register-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .register-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary-purple);
+        margin-bottom: 0.5rem;
+    }
+    
+    .register-header p {
+        font-size: 1.1rem;
+        color: #666;
+    }
+    
+    .register-content {
+        max-width: 700px;
+        margin: 0 auto;
+    }
+    
+    .register-image-section {
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+        min-height: 400px;
+    }
+    
+    .register-image-carousel {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        min-height: 400px;
+    }
+    
+    .register-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
+        background-size: cover;
+        background-position: top center;
+        background-repeat: no-repeat;
+    }
+    
+    .register-image.active {
+        opacity: 1;
+    }
+    
+    .register-form-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2.5rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.5rem;
+        display: block;
+        font-size: 0.95rem;
+    }
+    
+    .form-control {
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        width: 100%;
+        transition: border-color 0.3s;
+    }
+    
+    .form-control:focus {
+        border-color: var(--primary-purple);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(107, 70, 193, 0.1);
+    }
+    
+    .intl-tel-input {
+        width: 100%;
+    }
+    
+    .intl-tel-input .selected-flag {
+        border-radius: 8px 0 0 8px;
+    }
+    
+    .intl-tel-input input {
+        border-radius: 0 8px 8px 0;
+        border-left: none;
+    }
+    
+    .form-text {
+        font-size: 0.875rem;
+        color: #666;
+        margin-top: 0.5rem;
+    }
+    
+    .notification-options {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-top: 0.5rem;
+    }
+    
+    .notification-option {
+        display: flex;
+        align-items: center;
+    }
+    
+    .notification-option input[type="radio"] {
+        margin-right: 0.75rem;
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        accent-color: var(--primary-purple);
+    }
+    
+    .notification-option label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        font-weight: normal;
+        margin: 0;
+        padding: 0.75rem 1rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        transition: all 0.3s;
+        flex: 1;
+    }
+    
+    .notification-option input[type="radio"]:checked + label {
+        border-color: var(--primary-purple);
+        background: rgba(107, 70, 193, 0.05);
+        color: var(--primary-purple);
+        font-weight: 600;
+    }
+    
+    .notification-option label:hover {
+        border-color: var(--primary-blue);
+        background: rgba(14, 165, 233, 0.05);
+    }
+    
+    .notification-option label i {
+        font-size: 1.2rem;
+    }
+    
+    .submit-btn {
+        width: 100%;
+        padding: 1rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 8px;
+        background: var(--primary-purple);
+        border: none;
+        color: white;
+        transition: background 0.3s;
+        margin-top: 1rem;
+    }
+    
+    .submit-btn:hover {
+        background: var(--primary-blue);
+    }
+    
+    .info-box {
+        background: #f0f9ff;
+        border-radius: 10px;
+        padding: 1.25rem;
+        margin-top: 2rem;
+        border-left: 3px solid var(--primary-teal);
+    }
+    
+    .info-box strong {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: var(--primary-purple);
+    }
+    
+    .back-link {
+        text-align: center;
+        margin-top: 2rem;
+    }
+    
+    .back-link a {
+        color: var(--primary-purple);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .back-link a:hover {
+        color: var(--primary-blue);
+    }
+    
+    @media (max-width: 768px) {
+        .register-image-section {
+            min-height: 300px;
+        }
+        
+        .register-image-carousel {
+            min-height: 300px;
+        }
+        
+        .register-header h1 {
+            font-size: 2rem;
+        }
+        
+        .register-form-card {
+            padding: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block public_content %}
+<div class="register-page">
+    <div class="container">
+        <div class="register-container">
+            <!-- Header -->
+            <div class="register-header">
+                <h1>Join The Gathering</h1>
+                <p>Register to receive event reminders and stay connected</p>
+            </div>
+            
+            <!-- Content -->
+            <div class="register-content">
+                <!-- Image Section at Top -->
+                <div class="register-image-section">
+                    <div class="register-image-carousel">
+                        <div class="register-image active" style="background-image: url('{% static 'images/login/OASIS0297.jpg' %}');"></div>
+                        <div class="register-image" style="background-image: url('{% static 'images/login/OASIS0281.jpg' %}');"></div>
+                        <div class="register-image" style="background-image: url('{% static 'images/login/OASIS0291.jpg' %}');"></div>
+                        <div class="register-image" style="background-image: url('{% static 'images/login/OASIS0292.jpg' %}');"></div>
+                        <div class="register-image" style="background-image: url('{% static 'images/login/OASIS0310.jpg' %}');"></div>
+                        <div class="register-image" style="background-image: url('{% static 'images/login/OASIS0352.jpg' %}');"></div>
+                        <div class="register-image" style="background-image: url('{% static 'images/login/OASIS0364.jpg' %}');"></div>
+                        <div class="register-image" style="background-image: url('{% static 'images/login/IMGL9970-1.JPG' %}');"></div>
+                        <div class="register-image" style="background-image: url('{% static 'images/login/IMGL9986-10.JPG' %}');"></div>
+                        <div class="register-image" style="background-image: url('{% static 'images/login/IMGL0028-33.JPG' %}');"></div>
+                        <div class="register-image" style="background-image: url('{% static 'images/login/IMGL0029-34.JPG' %}');"></div>
+                        <div class="register-image" style="background-image: url('{% static 'images/login/KNFS0321.jpg' %}');"></div>
+                    </div>
+                </div>
+                
+                <!-- Form Section -->
+                <div class="register-form-card">
+                    <form method="post" id="registerForm">
+                        {% csrf_token %}
+                        
+                        <div class="form-group">
+                            <label for="{{ form.first_name.id_for_label }}" class="form-label">First Name *</label>
+                            {{ form.first_name }}
+                            {% if form.first_name.errors %}
+                                <div class="text-danger small mt-1">{{ form.first_name.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.last_name.id_for_label }}" class="form-label">Last Name *</label>
+                            {{ form.last_name }}
+                            {% if form.last_name.errors %}
+                                <div class="text-danger small mt-1">{{ form.last_name.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="phone" class="form-label">Phone Number *</label>
+                            <input type="tel" id="phone" class="form-control" required>
+                            <input type="hidden" id="phone_number" name="phone_number">
+                            {% if form.phone_number.errors %}
+                                <div class="text-danger small mt-1">{{ form.phone_number.errors }}</div>
+                            {% endif %}
+                            <small class="form-text">Select your country code and enter your phone number</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.email.id_for_label }}" class="form-label">Email (Optional)</label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="text-danger small mt-1">{{ form.email.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Notification Preference *</label>
+                            <div class="notification-options">
+                                <div class="notification-option">
+                                    <input type="radio" name="notification_preference" id="whatsapp" value="whatsapp" checked>
+                                    <label for="whatsapp">
+                                        <i class="bi bi-whatsapp"></i> WhatsApp
+                                    </label>
+                                </div>
+                                <div class="notification-option">
+                                    <input type="radio" name="notification_preference" id="sms" value="sms">
+                                    <label for="sms">
+                                        <i class="bi bi-chat-text"></i> SMS
+                                    </label>
+                                </div>
+                                <div class="notification-option">
+                                    <input type="radio" name="notification_preference" id="both" value="both">
+                                    <label for="both">
+                                        <i class="bi bi-bell"></i> Both
+                                    </label>
+                                </div>
+                            </div>
+                            <small class="form-text">How would you like to receive event reminders?</small>
+                            {% if form.notification_preference.errors %}
+                                <div class="text-danger small mt-1">{{ form.notification_preference.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <button type="submit" class="submit-btn">Register Now</button>
+                    </form>
+                    
+                    <div class="info-box">
+                        <strong>What happens next?</strong>
+                        After registering, you'll receive event reminders based on your notification preference. 
+                        You can also check in yourself using the "Mark Attendance" button on our homepage.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="back-link">
+                <a href="{% url 'landing' %}">
+                    <i class="bi bi-arrow-left"></i> Back to Homepage
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- International Telephone Input JS -->
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.3/build/js/intlTelInput.min.js"></script>
+
+<script>
+    const phoneInput = document.getElementById('phone');
+    const phoneInputHidden = document.getElementById('phone_number');
+    
+    const iti = window.intlTelInput(phoneInput, {
+        initialCountry: "auto",
+        geoIpLookup: function(callback) {
+            fetch('https://ipapi.co/json/')
+                .then(res => res.json())
+                .then(data => callback(data.country_code))
+                .catch(() => callback('US'));
+        },
+        utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.3/build/js/utils.js",
+        preferredCountries: ['US', 'GB', 'CA', 'AU', 'NG', 'GH', 'KE', 'ZA'],
+        separateDialCode: true,
+        nationalMode: false,
+    });
+    
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+        if (phoneInput.value.trim()) {
+            if (iti.isValidNumber()) {
+                phoneInputHidden.value = iti.getNumber();
+            } else {
+                e.preventDefault();
+                alert('Please enter a valid phone number');
+                phoneInput.focus();
+                return false;
+            }
+        } else {
+            e.preventDefault();
+            alert('Phone number is required');
+            phoneInput.focus();
+            return false;
+        }
+    });
+    
+    phoneInput.addEventListener('blur', function() {
+        if (phoneInput.value.trim() && iti.isValidNumber()) {
+            phoneInputHidden.value = iti.getNumber();
+        }
+    });
+    
+    phoneInput.addEventListener('input', function() {
+        if (iti.isValidNumber()) {
+            phoneInputHidden.value = iti.getNumber();
+        }
+    });
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const images = document.querySelectorAll('.register-image');
+        let currentIndex = 0;
+        
+        function rotateImages() {
+            images[currentIndex].classList.remove('active');
+            currentIndex = (currentIndex + 1) % images.length;
+            images[currentIndex].classList.add('active');
+        }
+        
+        setInterval(rotateImages, 4000);
+    });
+</script>
+{% endblock %}

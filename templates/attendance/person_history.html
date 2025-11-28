@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ person.get_full_name }} - Attendance History{% endblock %}
+
+{% block page_title %}Attendance History{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{% url 'people:detail' person.pk %}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Person Details
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Person Information</h5>
+            </div>
+            <div class="card-body">
+                <h4>{{ person.get_full_name }}</h4>
+                <p class="mb-1"><strong>Phone:</strong> {{ person.phone_number }}</p>
+                {% if person.email %}
+                <p class="mb-0"><strong>Email:</strong> {{ person.email }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Attendance History ({{ attendances.count }})</h5>
+            </div>
+            <div class="card-body">
+                {% if attendances %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Event</th>
+                                <th>Date</th>
+                                <th>Check-in Time</th>
+                                <th>Method</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for attendance in attendances %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'events:detail' attendance.event.pk %}">
+                                        {{ attendance.event.name }}
+                                    </a>
+                                </td>
+                                <td>{{ attendance.event.event_date|date:"M d, Y" }}</td>
+                                <td>{{ attendance.check_in_time|date:"g:i A" }}</td>
+                                <td>
+                                    <span class="badge bg-info">{{ attendance.get_check_in_method_display }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted text-center py-4">No attendance records found for this person.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

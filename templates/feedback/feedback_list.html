@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Feedback - The Gathering{% endblock %}
+
+{% block page_title %}Feedback{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{% url 'feedback:submit' %}" class="btn btn-primary" target="_blank">
+        <i class="bi bi-chat-left-text"></i> Submit Feedback
+    </a>
+</div>
+
+<!-- Filter Tabs -->
+<ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+        <a class="nav-link {% if filter_type == 'all' %}active{% endif %}" 
+           href="?type=all&status={{ filter_status }}">All Types</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if filter_type == 'suggestion' %}active{% endif %}" 
+           href="?type=suggestion&status={{ filter_status }}">Suggestions</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if filter_type == 'prayer_request' %}active{% endif %}" 
+           href="?type=prayer_request&status={{ filter_status }}">Prayer Requests</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if filter_type == 'complaint' %}active{% endif %}" 
+           href="?type=complaint&status={{ filter_status }}">Complaints</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if filter_type == 'other' %}active{% endif %}" 
+           href="?type=other&status={{ filter_status }}">Other</a>
+    </li>
+</ul>
+
+<ul class="nav nav-pills mb-4">
+    <li class="nav-item">
+        <a class="nav-link {% if filter_status == 'all' %}active{% endif %}" 
+           href="?type={{ filter_type }}&status=all">All Status</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if filter_status == 'new' %}active bg-warning text-dark{% endif %}" 
+           href="?type={{ filter_type }}&status=new">New</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if filter_status == 'reviewed' %}active bg-info{% endif %}" 
+           href="?type={{ filter_type }}&status=reviewed">Reviewed</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if filter_status == 'addressed' %}active bg-success{% endif %}" 
+           href="?type={{ filter_type }}&status=addressed">Addressed</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if filter_status == 'closed' %}active bg-secondary{% endif %}" 
+           href="?type={{ filter_type }}&status=closed">Closed</a>
+    </li>
+</ul>
+
+<!-- Feedback List -->
+{% if feedback_list %}
+<div class="row">
+    {% for feedback in feedback_list %}
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="badge 
+                    {% if feedback.feedback_type == 'suggestion' %}bg-info
+                    {% elif feedback.feedback_type == 'prayer_request' %}bg-success
+                    {% elif feedback.feedback_type == 'complaint' %}bg-warning text-dark
+                    {% else %}bg-secondary
+                    {% endif %}">
+                    {{ feedback.get_feedback_type_display }}
+                </span>
+                <span class="badge 
+                    {% if feedback.status == 'new' %}bg-warning text-dark
+                    {% elif feedback.status == 'reviewed' %}bg-info
+                    {% elif feedback.status == 'addressed' %}bg-success
+                    {% else %}bg-secondary
+                    {% endif %}">
+                    {{ feedback.get_status_display }}
+                </span>
+            </div>
+            <div class="card-body">
+                <p class="card-text">{{ feedback.message|truncatewords:30 }}</p>
+                <small class="text-muted">
+                    Submitted: {{ feedback.submitted_at|date:"M d, Y" }}
+                    {% if feedback.person %}
+                    by {{ feedback.person.get_full_name }}
+                    {% endif %}
+                </small>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'feedback:detail' feedback.pk %}" class="btn btn-sm btn-primary">
+                    <i class="bi bi-eye"></i> View Details
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body text-center py-5">
+        <p class="text-muted">No feedback found.</p>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+

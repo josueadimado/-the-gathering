@@ -1,0 +1,842 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Welcome - The Gathering{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Color Palette - Softer, Elegant Colors */
+    :root {
+        --primary-gold: #D4AF37;
+        --primary-purple: #6B46C1;
+        --primary-blue: #0EA5E9;
+        --primary-teal: #14B8A6;
+        --primary-rose: #EC4899;
+        --primary-green: #10B981;
+        --dark-bg: #1a1a2e;
+        --light-bg: #f8f9fa;
+    }
+    
+    .hero-section {
+        position: relative;
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--primary-purple) 0%, var(--primary-teal) 50%, var(--primary-blue) 100%);
+        overflow: hidden;
+        margin-bottom: 4rem;
+        border-radius: 0 0 50px 50px;
+    }
+    
+    .hero-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0.25;
+        background-size: cover;
+        background-position: center;
+        transition: opacity 0.8s ease-in-out;
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        color: white;
+        padding: 3rem 2rem;
+    }
+    
+    .hero-logo {
+        max-width: 350px;
+        width: 100%;
+        height: auto;
+        margin-bottom: 2rem;
+        filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4));
+        animation: float 3s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+    
+    .hero-title {
+        font-size: 4rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
+        background: linear-gradient(45deg, var(--primary-gold), #fff, var(--primary-gold));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.8rem;
+        font-weight: 400;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    .hero-motto {
+        font-size: 2rem;
+        font-weight: 600;
+        margin-top: 1.5rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        color: white;
+        letter-spacing: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .hero-motto span {
+        padding: 0.5rem 1.5rem;
+        background: rgba(255, 255, 255, 0.25);
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 255, 255, 0.4);
+        transition: all 0.3s ease;
+    }
+    
+    .hero-motto span:hover {
+        background: rgba(255, 255, 255, 0.35);
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+    }
+    
+    .motto-separator {
+        font-size: 2.5rem;
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 300;
+    }
+    
+    .image-gallery {
+        margin: 4rem 0;
+    }
+    
+    .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+    
+    .gallery-item {
+        position: relative;
+        overflow: hidden;
+        border-radius: 20px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        transition: transform 0.4s ease, box-shadow 0.4s ease;
+        aspect-ratio: 4/3;
+        border: 4px solid transparent;
+    }
+    
+    .gallery-item:nth-child(1) { border-color: var(--primary-purple); }
+    .gallery-item:nth-child(2) { border-color: var(--primary-blue); }
+    .gallery-item:nth-child(3) { border-color: var(--primary-teal); }
+    .gallery-item:nth-child(4) { border-color: var(--primary-green); }
+    .gallery-item:nth-child(5) { border-color: var(--primary-rose); }
+    .gallery-item:nth-child(6) { border-color: var(--primary-gold); }
+    .gallery-item:nth-child(7) { border-color: var(--primary-purple); }
+    .gallery-item:nth-child(8) { border-color: var(--primary-blue); }
+    .gallery-item:nth-child(9) { border-color: var(--primary-teal); }
+    .gallery-item:nth-child(10) { border-color: var(--primary-green); }
+    .gallery-item:nth-child(11) { border-color: var(--primary-rose); }
+    .gallery-item:nth-child(12) { border-color: var(--primary-gold); }
+    
+    .gallery-item:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+    }
+    
+    .gallery-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+    
+    .gallery-item:hover img {
+        transform: scale(1.15);
+    }
+    
+    .action-card {
+        border: none;
+        border-radius: 25px;
+        overflow: hidden;
+        transition: transform 0.4s ease, box-shadow 0.4s ease;
+        height: 100%;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        border: 3px solid transparent;
+    }
+    
+    .action-card:hover {
+        transform: translateY(-15px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+    
+    .action-card.register {
+        border-color: var(--primary-purple);
+    }
+    
+    .action-card.feedback {
+        border-color: var(--primary-teal);
+    }
+    
+    .action-card-header {
+        padding: 2.5rem;
+        text-align: center;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .action-card.register .action-card-header {
+        background: linear-gradient(135deg, var(--primary-purple) 0%, var(--primary-blue) 100%);
+    }
+    
+    .action-card.feedback .action-card-header {
+        background: linear-gradient(135deg, var(--primary-teal) 0%, var(--primary-green) 100%);
+    }
+    
+    .action-card-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+        animation: shine 3s infinite;
+    }
+    
+    @keyframes shine {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .action-icon {
+        font-size: 5rem;
+        margin-bottom: 1rem;
+        opacity: 0.95;
+        filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+    }
+    
+    .action-card .btn {
+        border-radius: 15px;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+    }
+    
+    .action-card.register .btn {
+        background: linear-gradient(135deg, var(--primary-purple) 0%, var(--primary-blue) 100%);
+        border: none;
+        color: white;
+    }
+    
+    .action-card.register .btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(107, 70, 193, 0.4);
+    }
+    
+    .action-card.feedback .btn {
+        background: linear-gradient(135deg, var(--primary-teal) 0%, var(--primary-green) 100%);
+        border: none;
+        color: white;
+    }
+    
+    .action-card.feedback .btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(20, 184, 166, 0.4);
+    }
+    
+    .meeting-info {
+        background: linear-gradient(135deg, rgba(107, 70, 193, 0.1) 0%, rgba(14, 165, 233, 0.1) 100%);
+        border-radius: 20px;
+        padding: 2rem;
+        margin: 2rem auto;
+        max-width: 800px;
+        border: 3px solid var(--primary-purple);
+        box-shadow: 0 8px 25px rgba(107, 70, 193, 0.2);
+        text-align: center;
+    }
+    
+    .meeting-info h3 {
+        color: var(--primary-purple);
+        font-weight: 700;
+        margin-bottom: 1rem;
+        font-size: 1.8rem;
+    }
+    
+    .meeting-details {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+    }
+    
+    .meeting-detail-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--primary-purple);
+    }
+    
+    .meeting-detail-item i {
+        font-size: 1.5rem;
+        color: var(--primary-teal);
+    }
+    
+    .info-section {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 25px;
+        padding: 3rem;
+        margin-top: 4rem;
+        border: 3px solid var(--primary-teal);
+        box-shadow: 0 10px 30px rgba(20, 184, 166, 0.2);
+    }
+    
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, var(--primary-purple), var(--primary-teal));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    /* Upcoming Events Section */
+    .upcoming-events-section {
+        margin: 3rem 0;
+        padding: 2rem 0;
+    }
+    
+    .event-card {
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        background: white;
+    }
+    
+    .event-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    .event-image-wrapper {
+        width: 100%;
+        height: 250px;
+        overflow: hidden;
+        position: relative;
+        background: #f0f0f0;
+    }
+    
+    .event-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        display: block;
+        transition: transform 0.4s ease;
+    }
+    
+    .event-card:hover .event-image {
+        transform: scale(1.08);
+    }
+    
+    .event-image-placeholder {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, var(--primary-purple) 0%, var(--primary-blue) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+    
+    .event-image-placeholder::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" opacity="0.2"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>') center/120px no-repeat;
+    }
+    
+    .event-details {
+        border-top: 1px solid #e9ecef;
+        border-bottom: 1px solid #e9ecef;
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+    }
+    
+    .event-details p {
+        margin-bottom: 0.5rem;
+        color: #555;
+        font-size: 0.95rem;
+    }
+    
+    .event-details i {
+        color: var(--primary-teal);
+        margin-right: 0.5rem;
+        width: 20px;
+    }
+    
+    .event-description {
+        font-size: 0.9rem;
+        color: #666;
+        margin-top: 0.5rem;
+    }
+    
+    .event-card .card-footer {
+        background: transparent;
+        border-top: 1px solid #e9ecef;
+        padding: 1rem 1.5rem;
+    }
+    
+    .event-card .card-body {
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+    
+    .event-card .card-title {
+        font-weight: 700;
+        color: var(--primary-purple);
+        margin-bottom: 0.75rem;
+        font-size: 1.3rem;
+        line-height: 1.3;
+    }
+    
+    .event-topic-wrapper {
+        background: linear-gradient(135deg, rgba(107, 70, 193, 0.1) 0%, rgba(14, 165, 233, 0.1) 100%);
+        border-left: 4px solid var(--primary-purple);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-top: 0.5rem;
+    }
+    
+    .event-topic-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--primary-purple);
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .event-topic-label i {
+        font-size: 0.9rem;
+    }
+    
+    .event-topic-content {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--primary-blue);
+        line-height: 1.4;
+    }
+    
+    .event-card .card-text {
+        color: #555;
+        line-height: 1.6;
+        flex-grow: 1;
+    }
+    
+    .event-card .card-text small {
+        display: block;
+        line-height: 1.8;
+    }
+    
+    .event-card .card-text small i {
+        margin-right: 0.5rem;
+        color: var(--primary-teal);
+    }
+    
+    .upcoming-events-section .row {
+        margin: 0 -15px;
+    }
+    
+    .upcoming-events-section .row > [class*='col-'] {
+        padding: 0 15px;
+    }
+    
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.3rem;
+        }
+        
+        .hero-motto {
+            font-size: 1.3rem;
+            gap: 0.8rem;
+        }
+        
+        .hero-motto span {
+            padding: 0.4rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .motto-separator {
+            font-size: 1.8rem;
+        }
+        
+        .hero-logo {
+            max-width: 250px;
+        }
+        
+        .meeting-info {
+            padding: 1.5rem;
+            margin: 1.5rem auto;
+        }
+        
+        .meeting-info h3 {
+            font-size: 1.4rem;
+        }
+        
+        .meeting-details {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .meeting-detail-item {
+            font-size: 1rem;
+        }
+        
+        .gallery-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+        
+        @media (max-width: 480px) {
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .action-icon {
+            font-size: 3.5rem;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+        }
+        
+        .event-card {
+            margin-bottom: 1.5rem;
+        }
+        
+        .event-image-wrapper {
+            height: 220px;
+        }
+        
+        .event-image-placeholder {
+            height: 220px;
+        }
+        
+        .event-card .card-title {
+            font-size: 1.1rem;
+        }
+        
+        .upcoming-events-section {
+            margin: 2rem 0;
+            padding: 1rem 0;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block public_content %}
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="hero-background" id="heroBackground"></div>
+    <div class="hero-content">
+        <img src="{% static 'images/login/The gathering 1.png' %}" alt="The Gathering Logo" class="hero-logo">
+        <h1 class="hero-title">Welcome to The Gathering</h1>
+        <p class="hero-subtitle">Join us for worship, fellowship, and community</p>
+        <div class="hero-motto">
+            <span>Word</span>
+            <span class="motto-separator">•</span>
+            <span>Worship</span>
+            <span class="motto-separator">•</span>
+            <span>Walk</span>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="container">
+    <!-- Meeting Information -->
+    <div class="meeting-info">
+        <h3><i class="bi bi-calendar-event-fill"></i> Join Us Every Week</h3>
+        <div class="meeting-details">
+            <div class="meeting-detail-item">
+                <i class="bi bi-calendar-week"></i>
+                <span>Every Saturday</span>
+            </div>
+            <div class="meeting-detail-item">
+                <i class="bi bi-clock-fill"></i>
+                <span>3:00 PM - 5:30 PM</span>
+            </div>
+            <div class="meeting-detail-item">
+                <i class="bi bi-geo-alt-fill"></i>
+                <span>@COME Center</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Upcoming Events Section -->
+    {% if upcoming_events %}
+    <div class="upcoming-events-section mb-5">
+        <h2 class="section-title text-center mb-5">
+            <i class="bi bi-calendar-event"></i> Upcoming Events
+        </h2>
+        <div class="row g-4">
+            {% for event in upcoming_events %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card event-card h-100">
+                    <div class="event-image-wrapper">
+                        {% if event.image %}
+                        <img src="{{ event.image.url }}" class="event-image" alt="{{ event.name }}">
+                        {% else %}
+                        <div class="event-image-placeholder">
+                            <i class="bi bi-calendar-event" style="font-size: 3rem; color: white; z-index: 1; position: relative;"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ event.name }}</h5>
+                        {% if event.topic %}
+                        <div class="event-topic-wrapper mb-3">
+                            <div class="event-topic-label">
+                                <i class="bi bi-bookmark-fill"></i> Topic
+                            </div>
+                            <div class="event-topic-content">
+                                {{ event.topic }}
+                            </div>
+                        </div>
+                        {% endif %}
+                        <div class="event-details mb-3">
+                            <p class="mb-2">
+                                <i class="bi bi-calendar"></i> 
+                                <strong>{{ event.event_date|date:"F d, Y" }}</strong>
+                            </p>
+                            <p class="mb-2">
+                                <i class="bi bi-clock"></i> 
+                                <strong>{{ event.event_time|time:"g:i A" }}</strong>
+                            </p>
+                            {% if event.location %}
+                            <p class="mb-0">
+                                <i class="bi bi-geo-alt"></i> 
+                                <strong>{{ event.location }}</strong>
+                            </p>
+                            {% endif %}
+                        </div>
+                        {% if event.description %}
+                        <p class="card-text event-description">{{ event.description|truncatewords:20 }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer bg-transparent border-top">
+                        <a href="{% url 'events:qr_scan' event.pk %}" class="btn btn-success w-100">
+                            <i class="bi bi-qr-code-scan"></i> Scan QR to Log Attendance
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Action Cards -->
+    <div class="row mb-5">
+        <div class="col-md-4 mb-4">
+            <div class="card action-card register">
+                <div class="action-card-header">
+                    <i class="bi bi-person-plus-fill action-icon"></i>
+                    <h3 class="mb-0" style="font-weight: 700; font-size: 2rem;">Register</h3>
+                </div>
+                <div class="card-body p-5">
+                    <p class="card-text mb-4" style="font-size: 1.1rem; line-height: 1.8;">
+                        New to The Gathering? Register here to receive event reminders and stay connected with our community.
+                    </p>
+                    <div class="d-grid">
+                        <a href="{% url 'people:register' %}" class="btn btn-lg">
+                            <i class="bi bi-person-plus"></i> Register Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card action-card checkin" style="border-color: var(--primary-teal);">
+                <div class="action-card-header" style="background: linear-gradient(135deg, var(--primary-teal) 0%, var(--primary-green) 100%);">
+                    <i class="bi bi-check-circle-fill action-icon"></i>
+                    <h3 class="mb-0" style="font-weight: 700; font-size: 2rem;">Check In</h3>
+                </div>
+                <div class="card-body p-5">
+                    <p class="card-text mb-4" style="font-size: 1.1rem; line-height: 1.8;">
+                        Already registered? Mark your attendance for today's event using your phone number.
+                    </p>
+                    <div class="d-grid">
+                        <a href="{% url 'attendance:self_check_in' %}" class="btn btn-lg" style="background: linear-gradient(135deg, var(--primary-teal) 0%, var(--primary-green) 100%); border: none; color: white;">
+                            <i class="bi bi-check-circle"></i> Mark Attendance
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card action-card feedback">
+                <div class="action-card-header">
+                    <i class="bi bi-chat-left-text-fill action-icon"></i>
+                    <h3 class="mb-0" style="font-weight: 700; font-size: 2rem;">Share Feedback</h3>
+                </div>
+                <div class="card-body p-5">
+                    <p class="card-text mb-4" style="font-size: 1.1rem; line-height: 1.8;">
+                        Have a suggestion, prayer request, or feedback? We'd love to hear from you!
+                    </p>
+                    <div class="d-grid">
+                        <a href="{% url 'feedback:submit' %}" class="btn btn-lg">
+                            <i class="bi bi-chat-left-text"></i> Submit Feedback
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Image Gallery -->
+    <div class="image-gallery">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Our Community</h2>
+            <p class="lead" style="font-size: 1.3rem; color: #666;">Join us in fellowship and worship</p>
+        </div>
+        <div class="gallery-grid">
+            <div class="gallery-item">
+                <img src="{% static 'images/login/OASIS0297.jpg' %}" alt="The Gathering Community">
+            </div>
+            <div class="gallery-item">
+                <img src="{% static 'images/login/OASIS0281.jpg' %}" alt="The Gathering Community">
+            </div>
+            <div class="gallery-item">
+                <img src="{% static 'images/login/OASIS0291.jpg' %}" alt="The Gathering Community">
+            </div>
+            <div class="gallery-item">
+                <img src="{% static 'images/login/OASIS0292.jpg' %}" alt="The Gathering Community">
+            </div>
+            <div class="gallery-item">
+                <img src="{% static 'images/login/OASIS0310.jpg' %}" alt="The Gathering Community">
+            </div>
+            <div class="gallery-item">
+                <img src="{% static 'images/login/OASIS0352.jpg' %}" alt="The Gathering Community">
+            </div>
+            <div class="gallery-item">
+                <img src="{% static 'images/login/OASIS0364.jpg' %}" alt="The Gathering Community">
+            </div>
+            <div class="gallery-item">
+                <img src="{% static 'images/login/IMGL9970-1.JPG' %}" alt="The Gathering Community">
+            </div>
+            <div class="gallery-item">
+                <img src="{% static 'images/login/IMGL9986-10.JPG' %}" alt="The Gathering Community">
+            </div>
+            <div class="gallery-item">
+                <img src="{% static 'images/login/IMGL0028-33.JPG' %}" alt="The Gathering Community">
+            </div>
+            <div class="gallery-item">
+                <img src="{% static 'images/login/IMGL0029-34.JPG' %}" alt="The Gathering Community">
+            </div>
+            <div class="gallery-item">
+                <img src="{% static 'images/login/KNFS0321.jpg' %}" alt="The Gathering Community">
+            </div>
+        </div>
+    </div>
+    
+    <!-- Info Section -->
+    <div class="info-section">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h3 class="mb-4" style="font-size: 2rem; color: var(--primary-teal);">
+                    <i class="bi bi-info-circle-fill"></i> About Check-In
+                </h3>
+                <p class="mb-3" style="font-size: 1.1rem; line-height: 1.8;">
+                    <strong style="color: var(--primary-purple);">For Attendees:</strong> You can check in yourself using the "Mark Attendance" button above, or our team can check you in at the event. 
+                    Simply use the phone number you registered with.
+                </p>
+                <p class="mb-0" style="font-size: 1.1rem; line-height: 1.8;">
+                    <strong style="color: var(--primary-purple);">For Administrators:</strong> <a href="{% url 'accounts:login' %}" class="btn btn-primary btn-lg" style="margin-left: 10px; background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue)); border: none;">Login here</a> to access the check-in system and manage attendance.
+                </p>
+            </div>
+            <div class="col-md-4 text-center">
+                <i class="bi bi-calendar-check-fill" style="font-size: 6rem; color: var(--primary-teal); opacity: 0.8;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Rotate hero background images
+    document.addEventListener('DOMContentLoaded', function() {
+        const heroBackground = document.getElementById('heroBackground');
+        if (!heroBackground) return;
+        
+        const images = [
+            "{% static 'images/login/OASIS0297.jpg' %}",
+            "{% static 'images/login/OASIS0281.jpg' %}",
+            "{% static 'images/login/OASIS0291.jpg' %}",
+            "{% static 'images/login/OASIS0292.jpg' %}",
+            "{% static 'images/login/OASIS0310.jpg' %}",
+            "{% static 'images/login/OASIS0352.jpg' %}",
+            "{% static 'images/login/OASIS0364.jpg' %}",
+            "{% static 'images/login/IMGL9970-1.JPG' %}",
+            "{% static 'images/login/IMGL9986-10.JPG' %}",
+            "{% static 'images/login/IMGL0028-33.JPG' %}",
+            "{% static 'images/login/IMGL0029-34.JPG' %}",
+            "{% static 'images/login/KNFS0321.jpg' %}"
+        ];
+        
+        let currentImageIndex = 0;
+        
+        function changeBackground() {
+            heroBackground.style.backgroundImage = `url(${images[currentImageIndex]})`;
+            currentImageIndex = (currentImageIndex + 1) % images.length;
+        }
+        
+        // Set initial image
+        changeBackground();
+        
+        // Change background every 5 seconds
+        setInterval(changeBackground, 5000);
+    });
+</script>
+{% endblock %}

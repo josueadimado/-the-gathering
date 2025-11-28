@@ -1,0 +1,411 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Submit Feedback - The Gathering{% endblock %}
+
+{% block extra_css %}
+<!-- International Telephone Input CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.3/build/css/intlTelInput.css">
+
+<style>
+    /* Color Variables */
+    :root {
+        --primary-purple: #6B46C1;
+        --primary-blue: #0EA5E9;
+        --primary-teal: #14B8A6;
+        --primary-green: #10B981;
+        --primary-rose: #EC4899;
+    }
+
+    .feedback-page {
+        min-height: 80vh;
+        padding: 3rem 0;
+        background: white; /* Uniform white background */
+    }
+
+    .feedback-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .feedback-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .feedback-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary-rose);
+        margin-bottom: 0.5rem;
+    }
+
+    .feedback-header p {
+        font-size: 1.1rem;
+        color: #666;
+    }
+
+    .feedback-image-section {
+        position: relative;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        height: 400px; /* Fixed height for carousel */
+        margin-bottom: 2rem;
+        background-color: #f8f9fa; /* Light gray background for empty space */
+    }
+
+    .feedback-image-carousel {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+
+    .feedback-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
+        background-size: cover; /* Images cover the area */
+        background-position: top; /* Show top portion of images */
+    }
+
+    .feedback-image.active {
+        opacity: 1;
+    }
+
+    .feedback-form-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2.5rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.5rem;
+        display: block;
+        font-size: 0.95rem;
+    }
+
+    .form-control, .form-select {
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        width: 100%;
+        transition: border-color 0.3s;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-rose);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+    }
+
+    textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .intl-tel-input {
+        width: 100%;
+    }
+
+    .intl-tel-input .selected-flag {
+        border-radius: 8px 0 0 8px;
+    }
+
+    .intl-tel-input input {
+        border-radius: 0 8px 8px 0;
+        border-left: none;
+    }
+
+    .form-text {
+        font-size: 0.85rem;
+        color: #777;
+        margin-top: 0.25rem;
+        display: block;
+    }
+
+    .form-check {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+
+    .form-check:hover {
+        border-color: var(--primary-rose);
+        background: rgba(236, 72, 153, 0.05);
+    }
+
+    .form-check-input {
+        width: 1.25rem;
+        height: 1.25rem;
+        margin: 0;
+        cursor: pointer;
+    }
+
+    .form-check-input:checked {
+        background-color: var(--primary-rose);
+        border-color: var(--primary-rose);
+    }
+
+    .form-check-label {
+        margin: 0;
+        cursor: pointer;
+        color: #555;
+        font-weight: 500;
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 1rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 8px;
+        background: var(--primary-rose);
+        border: none;
+        color: white;
+        transition: background-color 0.3s ease;
+        margin-top: 1rem;
+    }
+
+    .submit-btn:hover {
+        background-color: var(--primary-purple);
+    }
+
+    .info-box {
+        background: #f0f9ff;
+        border-radius: 10px;
+        padding: 1.25rem;
+        margin-top: 2rem;
+        border-left: 3px solid var(--primary-teal);
+    }
+
+    .info-box strong {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: var(--primary-purple);
+    }
+
+    .back-link {
+        text-align: center;
+        margin-top: 2rem;
+    }
+
+    .back-link a {
+        color: var(--primary-purple);
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .back-link a:hover {
+        color: var(--primary-blue);
+    }
+
+    @media (max-width: 768px) {
+        .feedback-header h1 {
+            font-size: 2rem;
+        }
+        .feedback-image-section {
+            height: 250px;
+        }
+        .feedback-form-card {
+            padding: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block public_content %}
+<div class="feedback-page">
+    <div class="container">
+        <div class="feedback-container">
+            <!-- Header -->
+            <div class="feedback-header">
+                <h1><i class="bi bi-chat-left-text-fill"></i> Share Your Feedback</h1>
+                <p>We'd love to hear from you! Share your thoughts, suggestions, or prayer requests</p>
+            </div>
+
+            <!-- Image Section -->
+            <div class="feedback-image-section">
+                <div class="feedback-image-carousel">
+                    <div class="feedback-image active" style="background-image: url('{% static 'images/login/OASIS0297.jpg' %}');"></div>
+                    <div class="feedback-image" style="background-image: url('{% static 'images/login/OASIS0281.jpg' %}');"></div>
+                    <div class="feedback-image" style="background-image: url('{% static 'images/login/OASIS0291.jpg' %}');"></div>
+                    <div class="feedback-image" style="background-image: url('{% static 'images/login/OASIS0292.jpg' %}');"></div>
+                    <div class="feedback-image" style="background-image: url('{% static 'images/login/OASIS0310.jpg' %}');"></div>
+                    <div class="feedback-image" style="background-image: url('{% static 'images/login/OASIS0352.jpg' %}');"></div>
+                    <div class="feedback-image" style="background-image: url('{% static 'images/login/OASIS0364.jpg' %}');"></div>
+                    <div class="feedback-image" style="background-image: url('{% static 'images/login/IMGL9970-1.JPG' %}');"></div>
+                    <div class="feedback-image" style="background-image: url('{% static 'images/login/IMGL9986-10.JPG' %}');"></div>
+                    <div class="feedback-image" style="background-image: url('{% static 'images/login/IMGL0028-33.JPG' %}');"></div>
+                    <div class="feedback-image" style="background-image: url('{% static 'images/login/IMGL0029-34.JPG' %}');"></div>
+                    <div class="feedback-image" style="background-image: url('{% static 'images/login/KNFS0321.jpg' %}');"></div>
+                </div>
+            </div>
+
+            <!-- Form Section -->
+            <div class="feedback-form-card">
+                <form method="post" id="feedbackForm">
+                    {% csrf_token %}
+
+                    <!-- Feedback Type -->
+                    <div class="form-group">
+                        <label for="{{ form.feedback_type.id_for_label }}" class="form-label">
+                            <i class="bi bi-tag"></i> Feedback Type *
+                        </label>
+                        {{ form.feedback_type }}
+                        {% if form.feedback_type.errors %}
+                            <div class="text-danger small mt-1">{{ form.feedback_type.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Message -->
+                    <div class="form-group">
+                        <label for="{{ form.message.id_for_label }}" class="form-label">
+                            <i class="bi bi-chat-left-text"></i> Your Message *
+                        </label>
+                        {{ form.message }}
+                        {% if form.message.errors %}
+                            <div class="text-danger small mt-1">{{ form.message.errors }}</div>
+                        {% endif %}
+                        <small class="form-text">Share your thoughts, suggestions, prayer requests, or any feedback you have</small>
+                    </div>
+
+                    <!-- Phone Number -->
+                    <div class="form-group">
+                        <label for="phone" class="form-label">
+                            <i class="bi bi-telephone"></i> Phone Number (Optional)
+                        </label>
+                        <input type="tel"
+                               id="phone"
+                               class="form-control"
+                               placeholder="Enter your phone number">
+                        <input type="hidden" id="person_phone" name="person_phone">
+                        {% if form.person_phone.errors %}
+                            <div class="text-danger small mt-1">{{ form.person_phone.errors }}</div>
+                        {% endif %}
+                        <small class="form-text">If you're registered, enter your phone number to link this feedback to your account</small>
+                    </div>
+
+                    <!-- Anonymous Checkbox -->
+                    <div class="form-group">
+                        <div class="form-check">
+                            {{ form.is_anonymous }}
+                            <label class="form-check-label" for="{{ form.is_anonymous.id_for_label }}">
+                                <i class="bi bi-eye-slash"></i> Submit anonymously
+                            </label>
+                        </div>
+                        {% if form.is_anonymous.errors %}
+                            <div class="text-danger small mt-1">{{ form.is_anonymous.errors }}</div>
+                        {% endif %}
+                        <small class="form-text">Your identity will be kept private if you choose this option</small>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="submit-btn">
+                        <i class="bi bi-send-fill"></i> Submit Feedback
+                    </button>
+                </form>
+
+                <!-- Info Box -->
+                <div class="info-box">
+                    <strong><i class="bi bi-info-circle-fill"></i> What happens next?</strong>
+                    Your feedback is important to us. We review all submissions and will address them accordingly. 
+                    If you provided your phone number and are registered, we may follow up with you.
+                </div>
+            </div>
+
+            <!-- Back Link -->
+            <div class="back-link">
+                <a href="{% url 'landing' %}">
+                    <i class="bi bi-arrow-left"></i> Back to Homepage
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- International Telephone Input JS -->
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.3/build/js/intlTelInput.min.js"></script>
+
+<script>
+    // Initialize international phone input
+    const phoneInput = document.getElementById('phone');
+    const phoneInputHidden = document.getElementById('person_phone');
+
+    if (phoneInput) {
+        const iti = window.intlTelInput(phoneInput, {
+            initialCountry: "auto",
+            geoIpLookup: function(callback) {
+                fetch('https://ipapi.co/json/')
+                    .then(res => res.json())
+                    .then(data => callback(data.country_code))
+                    .catch(() => callback('US'));
+            },
+            utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.3/build/js/utils.js",
+            preferredCountries: ['US', 'GB', 'CA', 'AU', 'NG', 'GH', 'KE', 'ZA'],
+            separateDialCode: true,
+            nationalMode: false,
+        });
+
+        // Update hidden field with formatted number when form is submitted
+        document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+            if (phoneInput.value.trim()) {
+                if (iti.isValidNumber()) {
+                    // Get number in E.164 format (e.g., +1234567890)
+                    const phoneNumber = iti.getNumber();
+                    phoneInputHidden.value = phoneNumber;
+                } else {
+                    // If invalid but user entered something, warn them but allow submission
+                    // (since phone is optional)
+                    phoneInputHidden.value = '';
+                }
+            } else {
+                phoneInputHidden.value = '';
+            }
+        });
+
+        // Update hidden field on change
+        phoneInput.addEventListener('input', function() {
+            if (iti.isValidNumber()) {
+                phoneInputHidden.value = iti.getNumber();
+            } else {
+                phoneInputHidden.value = '';
+            }
+        });
+    }
+
+    // Image carousel rotation
+    document.addEventListener('DOMContentLoaded', function() {
+        const images = document.querySelectorAll('.feedback-image');
+        let currentIndex = 0;
+
+        function rotateImages() {
+            images[currentIndex].classList.remove('active');
+            currentIndex = (currentIndex + 1) % images.length;
+            images[currentIndex].classList.add('active');
+        }
+
+        // Rotate every 4 seconds
+        setInterval(rotateImages, 4000);
+    });
+</script>
+{% endblock %}

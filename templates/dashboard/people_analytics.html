@@ -1,0 +1,271 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}People Analytics - The Gathering{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1><i class="bi bi-people"></i> People Analytics</h1>
+                <a href="{% url 'dashboard:index' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2">Total People</h6>
+                    <h2 class="mb-0">{{ total_people }}</h2>
+                    <small>Active members</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2">Last 30 Days</h6>
+                    <h2 class="mb-0">{{ recent_registrations }}</h2>
+                    <small>New registrations</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2">With Attendance</h6>
+                    <h2 class="mb-0">{{ people_with_attendance }}</h2>
+                    <small>Have attended events</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2">Never Attended</h6>
+                    <h2 class="mb-0">{{ people_without_attendance }}</h2>
+                    <small>No check-ins yet</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Most Active Attendees -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-star-fill"></i> Most Active Attendees</h5>
+                </div>
+                <div class="card-body">
+                    {% if active_attendees %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Attendance</th>
+                                    <th>Badge</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for person in active_attendees %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ person.get_full_name }}</strong>
+                                        {% if person.email %}
+                                        <br><small class="text-muted">{{ person.email }}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">{{ person.attendance_count }}</span>
+                                    </td>
+                                    <td>
+                                        {% if person.attendance_count >= 10 %}
+                                        <span class="badge bg-warning">⭐ Regular</span>
+                                        {% elif person.attendance_count >= 5 %}
+                                        <span class="badge bg-info">✓ Active</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">New</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted mb-0">No attendance data available yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Notification Preferences -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-bell"></i> Notification Preferences</h5>
+                </div>
+                <div class="card-body">
+                    {% if notification_prefs %}
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Preference</th>
+                                    <th>Count</th>
+                                    <th>Percentage</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for pref in notification_prefs %}
+                                <tr>
+                                    <td>
+                                        {% if pref.notification_preference == 'whatsapp' %}
+                                        <i class="bi bi-whatsapp text-success"></i> WhatsApp
+                                        {% elif pref.notification_preference == 'sms' %}
+                                        <i class="bi bi-chat-text text-primary"></i> SMS
+                                        {% elif pref.notification_preference == 'both' %}
+                                        <i class="bi bi-bell-fill text-warning"></i> Both
+                                        {% else %}
+                                        <i class="bi bi-bell-slash text-secondary"></i> None
+                                        {% endif %}
+                                    </td>
+                                    <td><strong>{{ pref.count }}</strong></td>
+                                    <td>
+                                        {% widthratio pref.count total_people 100 as percentage %}
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar" role="progressbar" style="width: {{ percentage }}%">
+                                                {{ percentage }}%
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted mb-0">No preference data available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Trends -->
+    {% if recent_registrations_by_month %}
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-graph-up-arrow"></i> Registration Trends (Last 6 Months)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Month</th>
+                                    <th>Registrations</th>
+                                    <th>Visual</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for month in recent_registrations_by_month %}
+                                <tr>
+                                    <td><strong>{{ month.month }}</strong></td>
+                                    <td><strong>{{ month.count }}</strong></td>
+                                    <td>
+                                        {% with max_count=recent_registrations_by_month|first %}
+                                        {% widthratio month.count max_count.count 100 as bar_width %}
+                                        <div class="progress" style="height: 25px;">
+                                            <div class="progress-bar bg-primary" role="progressbar" style="width: {% if max_count.count > 0 %}{{ bar_width }}{% else %}0{% endif %}%">
+                                                {{ month.count }}
+                                            </div>
+                                        </div>
+                                        {% endwith %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- People Statistics -->
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="bi bi-pie-chart"></i> Attendance Overview</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span>People with attendance:</span>
+                        <strong class="text-success">{{ people_with_attendance }}</strong>
+                    </div>
+                    <div class="progress mb-3" style="height: 30px;">
+                        {% widthratio people_with_attendance total_people 100 as attended_pct %}
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ attended_pct }}%">
+                            {{ attended_pct }}%
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>People without attendance:</span>
+                        <strong class="text-warning">{{ people_without_attendance }}</strong>
+                    </div>
+                    <div class="progress" style="height: 30px;">
+                        {% widthratio people_without_attendance total_people 100 as not_attended_pct %}
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: {{ not_attended_pct }}%">
+                            {{ not_attended_pct }}%
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Quick Stats</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i class="bi bi-check-circle text-success"></i> 
+                            <strong>Active Members:</strong> {{ total_people }}
+                        </li>
+                        {% if inactive_people > 0 %}
+                        <li class="mb-2">
+                            <i class="bi bi-x-circle text-secondary"></i> 
+                            <strong>Inactive Members:</strong> {{ inactive_people }}
+                        </li>
+                        {% endif %}
+                        <li class="mb-2">
+                            <i class="bi bi-calendar-check text-primary"></i> 
+                            <strong>Recent Registrations (30 days):</strong> {{ recent_registrations }}
+                        </li>
+                        <li>
+                            <i class="bi bi-people-fill text-info"></i> 
+                            <strong>Active Attendees:</strong> {{ people_with_attendance }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

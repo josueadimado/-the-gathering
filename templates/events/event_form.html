@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ action }} Event - The Gathering{% endblock %}
+
+{% block page_title %}{{ action }} Event{% endblock %}
+
+{% block extra_css %}
+<style>
+    .image-preview-container {
+        margin-top: 1rem;
+    }
+    
+    .image-preview-container img {
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-control[type="file"] {
+        padding: 0.5rem;
+    }
+    
+    .form-control[type="file"]::-webkit-file-upload-button {
+        padding: 0.5rem 1rem;
+        background-color: #0d6efd;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-right: 1rem;
+    }
+    
+    .form-control[type="file"]::-webkit-file-upload-button:hover {
+        background-color: #0b5ed7;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{% url 'events:list' %}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Events
+    </a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">{{ action }} Event</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.name.id_for_label }}" class="form-label">Event Name *</label>
+                        {{ form.name }}
+                        {% if form.name.errors %}
+                            <div class="text-danger small">{{ form.name.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.topic.id_for_label }}" class="form-label">Topic</label>
+                        {{ form.topic }}
+                        {% if form.topic.errors %}
+                            <div class="text-danger small">{{ form.topic.errors }}</div>
+                        {% endif %}
+                        <small class="form-text text-muted">Topic or theme for this event (e.g., "Faith and Hope", "Love and Unity")</small>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.event_date.id_for_label }}" class="form-label">Date *</label>
+                            {{ form.event_date }}
+                            {% if form.event_date.errors %}
+                                <div class="text-danger small">{{ form.event_date.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.event_time.id_for_label }}" class="form-label">Time *</label>
+                            {{ form.event_time }}
+                            {% if form.event_time.errors %}
+                                <div class="text-danger small">{{ form.event_time.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.event_type.id_for_label }}" class="form-label">Event Type *</label>
+                        {{ form.event_type }}
+                        {% if form.event_type.errors %}
+                            <div class="text-danger small">{{ form.event_type.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.location.id_for_label }}" class="form-label">Location</label>
+                        {{ form.location }}
+                        {% if form.location.errors %}
+                            <div class="text-danger small">{{ form.location.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                            <div class="text-danger small">{{ form.description.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.image.id_for_label }}" class="form-label">Event Image</label>
+                        {% if form.instance.pk and form.instance.image %}
+                            <div class="mb-3">
+                                <p class="small text-muted mb-2"><strong>Current image:</strong></p>
+                                <img src="{{ form.instance.image.url }}" alt="Current event image" class="img-thumbnail" style="max-width: 300px; max-height: 300px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                <p class="small text-muted mt-2">Upload a new image to replace this one</p>
+                            </div>
+                        {% endif %}
+                        {{ form.image }}
+                        {% if form.image.errors %}
+                            <div class="text-danger small">{{ form.image.errors }}</div>
+                        {% endif %}
+                        <small class="form-text text-muted">Upload an image for this event (optional). Supported formats: JPG, PNG, GIF. Leave empty to keep current image.</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            {{ form.is_active }}
+                            <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                                Active Event
+                            </label>
+                        </div>
+                        {% if form.is_active.errors %}
+                            <div class="text-danger small">{{ form.is_active.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'events:list' %}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">{{ action }} Event</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,351 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login - The Gathering{% endblock %}
+
+{% block public_navbar %}
+<!-- Simple Navigation for Login Page -->
+<nav class="navbar navbar-dark" style="background: linear-gradient(135deg, #6B46C1 0%, #0EA5E9 100%); padding: 1rem 0;">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'landing' %}" style="font-weight: 700; font-size: 1.3rem; color: white !important;">
+            <i class="bi bi-house-heart-fill"></i> The Gathering
+        </a>
+        <a href="{% url 'landing' %}" class="btn btn-light" style="border-radius: 10px; font-weight: 600;">
+            <i class="bi bi-arrow-left"></i> Return to Homepage
+        </a>
+    </div>
+</nav>
+{% endblock %}
+
+{% block public_content %}
+<div class="login-page-simple">
+    <div class="login-container-simple">
+        <!-- Left Side - Single Scrolling Image -->
+        <div class="image-scroll-section">
+            <div class="image-carousel">
+                <div class="carousel-image active" style="background-image: url('{% static 'images/login/OASIS0297.jpg' %}');"></div>
+                <div class="carousel-image" style="background-image: url('{% static 'images/login/OASIS0281.jpg' %}');"></div>
+                <div class="carousel-image" style="background-image: url('{% static 'images/login/OASIS0291.jpg' %}');"></div>
+                <div class="carousel-image" style="background-image: url('{% static 'images/login/OASIS0292.jpg' %}');"></div>
+                <div class="carousel-image" style="background-image: url('{% static 'images/login/OASIS0310.jpg' %}');"></div>
+                <div class="carousel-image" style="background-image: url('{% static 'images/login/OASIS0352.jpg' %}');"></div>
+                <div class="carousel-image" style="background-image: url('{% static 'images/login/OASIS0364.jpg' %}');"></div>
+                <div class="carousel-image" style="background-image: url('{% static 'images/login/IMGL9970-1.JPG' %}');"></div>
+                <div class="carousel-image" style="background-image: url('{% static 'images/login/IMGL9986-10.JPG' %}');"></div>
+                <div class="carousel-image" style="background-image: url('{% static 'images/login/IMGL0028-33.JPG' %}');"></div>
+                <div class="carousel-image" style="background-image: url('{% static 'images/login/IMGL0029-34.JPG' %}');"></div>
+                <div class="carousel-image" style="background-image: url('{% static 'images/login/KNFS0321.jpg' %}');"></div>
+            </div>
+        </div>
+        
+        <!-- Right Side - Login Form -->
+        <div class="login-form-section">
+            <div class="login-form-wrapper-simple">
+                <!-- Logo -->
+                <div class="logo-container">
+                    <img src="{% static 'images/login/The gathering 1.png' %}" alt="The Gathering Logo" class="logo-img">
+                </div>
+                
+                <!-- Welcome Text -->
+                <div class="welcome-text">
+                    <h1>Welcome Back</h1>
+                    <p>Sign in to continue</p>
+                </div>
+                
+                <!-- Login Form -->
+                <form method="post" class="login-form-simple">
+                    {% csrf_token %}
+                    
+                    {% if form.errors %}
+                    <div class="alert-box">
+                        <i class="bi bi-exclamation-circle"></i>
+                        Invalid username or password
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Username -->
+                    <div class="input-group-simple">
+                        <label for="id_username">Username</label>
+                        <input type="text" 
+                               name="username" 
+                               id="id_username" 
+                               placeholder="Enter your username"
+                               required 
+                               autofocus>
+                    </div>
+                    
+                    <!-- Password -->
+                    <div class="input-group-simple">
+                        <label for="id_password">Password</label>
+                        <input type="password" 
+                               name="password" 
+                               id="id_password" 
+                               placeholder="Enter your password"
+                               required>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <button type="submit" class="login-btn">
+                        Sign In
+                    </button>
+                </form>
+                
+                <!-- Footer -->
+                <div class="form-footer-simple">
+                    <p>Need help? Contact administrator</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+<!-- Footer removed for login page -->
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Page Wrapper */
+    .login-page-simple {
+        min-height: 100vh;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+    
+    /* Main Container */
+    .login-container-simple {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        max-width: 1200px;
+        width: 100%;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+    
+    /* Image Scroll Section - Single Large Image */
+    .image-scroll-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .image-carousel {
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+    
+    .carousel-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        opacity: 0;
+        transition: opacity 1.5s ease-in-out;
+    }
+    
+    .carousel-image.active {
+        opacity: 1;
+    }
+    
+    /* Login Form Section */
+    .login-form-section {
+        padding: 4rem 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: white;
+    }
+    
+    .login-form-wrapper-simple {
+        width: 100%;
+        max-width: 400px;
+    }
+    
+    /* Logo */
+    .logo-container {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .logo-img {
+        max-width: 180px;
+        height: auto;
+    }
+    
+    /* Welcome Text */
+    .welcome-text {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+    
+    .welcome-text h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin: 0 0 0.5rem 0;
+    }
+    
+    .welcome-text p {
+        color: #6b7280;
+        font-size: 1rem;
+        margin: 0;
+    }
+    
+    /* Form */
+    .login-form-simple {
+        width: 100%;
+    }
+    
+    /* Alert Box */
+    .alert-box {
+        background: #fee2e2;
+        color: #991b1b;
+        padding: 12px 16px;
+        border-radius: 10px;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+    }
+    
+    .alert-box i {
+        font-size: 1.1rem;
+    }
+    
+    /* Input Groups */
+    .input-group-simple {
+        margin-bottom: 1.5rem;
+    }
+    
+    .input-group-simple label {
+        display: block;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+    }
+    
+    .input-group-simple input {
+        width: 100%;
+        padding: 14px 16px;
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+    
+    .input-group-simple input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .input-group-simple input::placeholder {
+        color: #9ca3af;
+    }
+    
+    /* Login Button */
+    .login-btn {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 0.5rem;
+    }
+    
+    .login-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    .login-btn:active {
+        transform: translateY(0);
+    }
+    
+    /* Footer */
+    .form-footer-simple {
+        text-align: center;
+        margin-top: 2rem;
+    }
+    
+    .form-footer-simple p {
+        color: #9ca3af;
+        font-size: 0.85rem;
+        margin: 0;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .login-container-simple {
+            grid-template-columns: 1fr;
+        }
+        
+        .image-scroll-section {
+            min-height: 300px;
+        }
+        
+        .login-form-section {
+            padding: 3rem 2rem;
+        }
+        
+        .welcome-text h1 {
+            font-size: 1.75rem;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .login-page-simple {
+            padding: 1rem;
+        }
+        
+        .login-container-simple {
+            border-radius: 16px;
+        }
+        
+        .login-form-section {
+            padding: 2rem 1.5rem;
+        }
+        
+        .logo-img {
+            max-width: 150px;
+        }
+    }
+</style>
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Image Carousel Rotation
+    const carouselImages = document.querySelectorAll('.carousel-image');
+    let currentIndex = 0;
+    
+    function rotateImages() {
+        carouselImages[currentIndex].classList.remove('active');
+        currentIndex = (currentIndex + 1) % carouselImages.length;
+        carouselImages[currentIndex].classList.add('active');
+    }
+    
+    // Change image every 5 seconds
+    setInterval(rotateImages, 5000);
+</script>
+{% endblock %}

@@ -1,0 +1,388 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Check In - The Gathering{% endblock %}
+
+{% block extra_css %}
+<!-- International Telephone Input CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.3/build/css/intlTelInput.css">
+
+<style>
+    :root {
+        --primary-purple: #6B46C1;
+        --primary-blue: #0EA5E9;
+        --primary-teal: #14B8A6;
+    }
+    
+    .checkin-page {
+        min-height: 80vh;
+        padding: 3rem 0;
+        background: white;
+    }
+    
+    .checkin-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    .checkin-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .checkin-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary-purple);
+        margin-bottom: 0.5rem;
+    }
+    
+    .checkin-header p {
+        font-size: 1.1rem;
+        color: #666;
+    }
+    
+    .checkin-content {
+        max-width: 700px;
+        margin: 0 auto;
+    }
+    
+    .checkin-image-section {
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+        min-height: 400px;
+    }
+    
+    .checkin-image-carousel {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        min-height: 400px;
+    }
+    
+    .checkin-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
+        background-size: cover;
+        background-position: top center;
+    }
+    
+    .checkin-image.active {
+        opacity: 1;
+    }
+    
+    .checkin-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2.5rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.5rem;
+        display: block;
+        font-size: 0.95rem;
+    }
+    
+    .form-control, .form-select {
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        width: 100%;
+        transition: border-color 0.3s;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-purple);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(107, 70, 193, 0.1);
+    }
+    
+    .intl-tel-input {
+        width: 100%;
+    }
+    
+    .intl-tel-input .selected-flag {
+        border-radius: 8px 0 0 8px;
+    }
+    
+    .intl-tel-input input {
+        border-radius: 0 8px 8px 0;
+        border-left: none;
+    }
+    
+    .form-text {
+        font-size: 0.875rem;
+        color: #666;
+        margin-top: 0.5rem;
+    }
+    
+    .submit-btn {
+        width: 100%;
+        padding: 1rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 8px;
+        background: var(--primary-purple);
+        border: none;
+        color: white;
+        transition: background 0.3s;
+        margin-top: 1rem;
+    }
+    
+    .submit-btn:hover {
+        background: var(--primary-blue);
+    }
+    
+    .alert-box {
+        padding: 1rem 1.25rem;
+        border-radius: 10px;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .alert-success {
+        background: #f0fdf4;
+        border-left: 4px solid var(--primary-teal);
+        color: #166534;
+    }
+    
+    .alert-error {
+        background: #fef2f2;
+        border-left: 4px solid #ef4444;
+        color: #991b1b;
+    }
+    
+    .alert-box i {
+        font-size: 1.25rem;
+    }
+    
+    .info-box {
+        background: #f0f9ff;
+        border-radius: 10px;
+        padding: 1.25rem;
+        margin-top: 2rem;
+        border-left: 3px solid var(--primary-teal);
+    }
+    
+    .info-box strong {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: var(--primary-purple);
+    }
+    
+    .info-box a {
+        color: var(--primary-purple);
+        text-decoration: none;
+        font-weight: 600;
+    }
+    
+    .info-box a:hover {
+        color: var(--primary-blue);
+        text-decoration: underline;
+    }
+    
+    .back-link {
+        text-align: center;
+        margin-top: 2rem;
+    }
+    
+    .back-link a {
+        color: var(--primary-purple);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .back-link a:hover {
+        color: var(--primary-blue);
+    }
+    
+    @media (max-width: 768px) {
+        .checkin-image-section {
+            min-height: 300px;
+        }
+        
+        .checkin-image-carousel {
+            min-height: 300px;
+        }
+        
+        .checkin-header h1 {
+            font-size: 2rem;
+        }
+        
+        .checkin-card {
+            padding: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block public_content %}
+<div class="checkin-page">
+    <div class="container">
+        <div class="checkin-container">
+            <!-- Header -->
+            <div class="checkin-header">
+                <h1><i class="bi bi-check-circle-fill"></i> Check In</h1>
+                <p>Mark your attendance for today's event</p>
+            </div>
+            
+            <!-- Content -->
+            <div class="checkin-content">
+                <!-- Image Section at Top -->
+                <div class="checkin-image-section">
+                    <div class="checkin-image-carousel">
+                        <div class="checkin-image active" style="background-image: url('{% static 'images/login/OASIS0297.jpg' %}');"></div>
+                        <div class="checkin-image" style="background-image: url('{% static 'images/login/OASIS0281.jpg' %}');"></div>
+                        <div class="checkin-image" style="background-image: url('{% static 'images/login/OASIS0291.jpg' %}');"></div>
+                        <div class="checkin-image" style="background-image: url('{% static 'images/login/OASIS0292.jpg' %}');"></div>
+                        <div class="checkin-image" style="background-image: url('{% static 'images/login/OASIS0310.jpg' %}');"></div>
+                        <div class="checkin-image" style="background-image: url('{% static 'images/login/OASIS0352.jpg' %}');"></div>
+                        <div class="checkin-image" style="background-image: url('{% static 'images/login/OASIS0364.jpg' %}');"></div>
+                        <div class="checkin-image" style="background-image: url('{% static 'images/login/IMGL9970-1.JPG' %}');"></div>
+                        <div class="checkin-image" style="background-image: url('{% static 'images/login/IMGL9986-10.JPG' %}');"></div>
+                        <div class="checkin-image" style="background-image: url('{% static 'images/login/IMGL0028-33.JPG' %}');"></div>
+                        <div class="checkin-image" style="background-image: url('{% static 'images/login/IMGL0029-34.JPG' %}');"></div>
+                        <div class="checkin-image" style="background-image: url('{% static 'images/login/KNFS0321.jpg' %}');"></div>
+                    </div>
+                </div>
+                
+                <!-- Form Card -->
+                <div class="checkin-card">
+                    {% if success_message %}
+                    <div class="alert-box alert-success">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>{{ success_message }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if error_message %}
+                    <div class="alert-box alert-error">
+                        <i class="bi bi-exclamation-circle-fill"></i>
+                        <span>{{ error_message }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    <form method="post" id="checkinForm">
+                        {% csrf_token %}
+                        
+                        <div class="form-group">
+                            <label for="phone" class="form-label">Phone Number *</label>
+                            <input type="tel" id="phone" class="form-control" required>
+                            <input type="hidden" id="phone_number" name="phone_number">
+                            <small class="form-text">Enter the phone number you used to register</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="event_id" class="form-label">Select Event *</label>
+                            <select name="event_id" id="event_id" class="form-select" required>
+                                <option value="">Choose an event...</option>
+                                {% for event in upcoming_events %}
+                                <option value="{{ event.pk }}" {% if default_event_id == event.pk %}selected{% endif %}>
+                                    {{ event.name }} - {{ event.event_date|date:"M d, Y" }} at {{ event.event_time|time:"g:i A" }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            {% if not upcoming_events %}
+                            <small class="form-text text-danger">No upcoming events available. Please contact administrator.</small>
+                            {% endif %}
+                        </div>
+                        
+                        <button type="submit" class="submit-btn">
+                            <i class="bi bi-check-circle"></i> Check In
+                        </button>
+                    </form>
+                    
+                    <div class="info-box">
+                        <strong>Not registered yet?</strong>
+                        <a href="{% url 'people:register' %}">Register here</a> first, then come back to check in.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="back-link">
+                <a href="{% url 'landing' %}">
+                    <i class="bi bi-arrow-left"></i> Back to Homepage
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- International Telephone Input JS -->
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.3/build/js/intlTelInput.min.js"></script>
+
+<script>
+    const phoneInput = document.getElementById('phone');
+    const phoneInputHidden = document.getElementById('phone_number');
+    
+    const iti = window.intlTelInput(phoneInput, {
+        initialCountry: "auto",
+        geoIpLookup: function(callback) {
+            fetch('https://ipapi.co/json/')
+                .then(res => res.json())
+                .then(data => callback(data.country_code))
+                .catch(() => callback('US'));
+        },
+        utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.3/build/js/utils.js",
+        preferredCountries: ['US', 'GB', 'CA', 'AU', 'NG', 'GH', 'KE', 'ZA'],
+        separateDialCode: true,
+        nationalMode: false,
+    });
+    
+    document.getElementById('checkinForm').addEventListener('submit', function(e) {
+        if (phoneInput.value.trim()) {
+            if (iti.isValidNumber()) {
+                phoneInputHidden.value = iti.getNumber();
+            } else {
+                e.preventDefault();
+                alert('Please enter a valid phone number');
+                phoneInput.focus();
+                return false;
+            }
+        } else {
+            e.preventDefault();
+            alert('Phone number is required');
+            phoneInput.focus();
+            return false;
+        }
+    });
+    
+    phoneInput.addEventListener('input', function() {
+        if (iti.isValidNumber()) {
+            phoneInputHidden.value = iti.getNumber();
+        }
+    });
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const images = document.querySelectorAll('.checkin-image');
+        let currentIndex = 0;
+        
+        function rotateImages() {
+            images[currentIndex].classList.remove('active');
+            currentIndex = (currentIndex + 1) % images.length;
+            images[currentIndex].classList.add('active');
+        }
+        
+        setInterval(rotateImages, 4000);
+    });
+</script>
+{% endblock %}

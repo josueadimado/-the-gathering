@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Thank You - The Gathering{% endblock %}
+
+{% block public_content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card text-center">
+            <div class="card-body py-5">
+                <div class="mb-4">
+                    <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+                </div>
+                <h2 class="text-success mb-3">Thank You!</h2>
+                <p class="lead">Your feedback has been submitted successfully.</p>
+                <p class="text-muted">We appreciate your input and will review it soon.</p>
+                <a href="{% url 'feedback:submit' %}" class="btn btn-primary mt-3">Submit Another Feedback</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

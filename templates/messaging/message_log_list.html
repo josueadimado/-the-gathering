@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Message Logs - The Gathering{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="bi bi-envelope-check"></i> Message Logs</h1>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'messaging:template_list' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-envelope-paper"></i> View Templates
+                    </a>
+                    <a href="{% url 'messaging:message_log_list' %}?refresh=1" class="btn btn-outline-success">
+                        <i class="bi bi-arrow-repeat"></i> Refresh Delivery Status
+                    </a>
+                </div>
+            </div>
+
+            <!-- Summary Statistics -->
+            <div class="row mb-4">
+                <div class="col-md-3 mb-3">
+                    <div class="card border-primary">
+                        <div class="card-body text-center">
+                            <h3 class="text-primary mb-1">{{ total_count }}</h3>
+                            <small class="text-muted">Total Messages</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card border-success">
+                        <div class="card-body text-center">
+                            <h3 class="text-success mb-1">{{ sent_count }}</h3>
+                            <small class="text-muted">Sent</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card border-warning">
+                        <div class="card-body text-center">
+                            <h3 class="text-warning mb-1">{{ pending_count }}</h3>
+                            <small class="text-muted">Pending</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card border-danger">
+                        <div class="card-body text-center">
+                            <h3 class="text-danger mb-1">{{ failed_count }}</h3>
+                            <small class="text-muted">Failed</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Batch Statistics (Last Hour) -->
+            {% if recent_total > 0 %}
+            <div class="alert alert-info mb-4">
+                <h6 class="mb-2"><i class="bi bi-clock-history"></i> Recent Batch (Last Hour)</h6>
+                <div class="row">
+                    <div class="col-md-3">
+                        <strong>Total:</strong> {{ recent_total }}
+                    </div>
+                    <div class="col-md-3">
+                        <strong class="text-success">Sent:</strong> {{ recent_sent }}
+                    </div>
+                    <div class="col-md-3">
+                        <strong class="text-warning">Pending:</strong> {{ recent_pending }}
+                    </div>
+                    <div class="col-md-3">
+                        <strong class="text-danger">Failed:</strong> {{ recent_failed }}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Filters -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <input type="hidden" name="page" value="1">
+                        <div class="col-md-4">
+                            <label for="status" class="form-label">Filter by Status</label>
+                            <select name="status" id="status" class="form-select">
+                                <option value="all" {% if filter_status == 'all' %}selected{% endif %}>All Statuses</option>
+                                <option value="pending" {% if filter_status == 'pending' %}selected{% endif %}>Pending</option>
+                                <option value="sent" {% if filter_status == 'sent' %}selected{% endif %}>Sent</option>
+                                <option value="delivered" {% if filter_status == 'delivered' %}selected{% endif %}>Delivered</option>
+                                <option value="failed" {% if filter_status == 'failed' %}selected{% endif %}>Failed</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="type" class="form-label">Filter by Type</label>
+                            <select name="type" id="type" class="form-select">
+                                <option value="all" {% if filter_type == 'all' %}selected{% endif %}>All Types</option>
+                                <option value="sms" {% if filter_type == 'sms' %}selected{% endif %}>SMS</option>
+                                <option value="whatsapp" {% if filter_type == 'whatsapp' %}selected{% endif %}>WhatsApp</option>
+                                <option value="email" {% if filter_type == 'email' %}selected{% endif %}>Email</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-funnel"></i> Filter
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {% if page_obj %}
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Message History ({{ page_obj.paginator.count }} total)</h5>
+                    <small class="text-white-50">
+                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                    </small>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Recipient</th>
+                                    <th>Type</th>
+                                    <th>Message</th>
+                                    <th>Status</th>
+                                    <th>Sent At</th>
+                                    <th>Event</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for log in page_obj %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ log.person.get_full_name }}</strong><br>
+                                        <small class="text-muted">{{ log.recipient }}</small>
+                                    </td>
+                                    <td>
+                                        {% if log.message_type == 'sms' %}
+                                        <span class="badge bg-info">SMS</span>
+                                        {% elif log.message_type == 'whatsapp' %}
+                                        <span class="badge bg-success">WhatsApp</span>
+                                        {% else %}
+                                        <span class="badge bg-warning">Email</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <small>{{ log.body|truncatewords:15 }}</small>
+                                    </td>
+                                    <td>
+                                        {% if log.status == 'sent' %}
+                                        <span class="badge bg-success">Sent</span>
+                                        {% elif log.status == 'delivered' %}
+                                        <span class="badge bg-info">Delivered</span>
+                                        {% elif log.status == 'failed' %}
+                                        <span class="badge bg-danger">Failed</span>
+                                        {% if log.error_message %}
+                                        <br><small class="text-danger" title="{{ log.error_message }}">{{ log.error_message|truncatewords:10 }}</small>
+                                        {% endif %}
+                                        {% else %}
+                                        <span class="badge bg-warning">Pending</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if log.sent_at %}
+                                        {{ log.sent_at|date:"M d, Y g:i A" }}
+                                        {% else %}
+                                        <span class="text-muted">Not sent</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if log.event %}
+                                        <a href="{% url 'events:detail' log.event.pk %}">{{ log.event.name }}</a>
+                                        {% else %}
+                                        <span class="text-muted">—</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if page_obj.paginator.num_pages > 1 %}
+                    <nav aria-label="Message logs pagination" class="mt-3">
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if filter_status != 'all' %}&status={{ filter_status }}{% endif %}{% if filter_type != 'all' %}&type={{ filter_type }}{% endif %}">
+                                    Previous
+                                </a>
+                            </li>
+                            {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">Previous</span>
+                            </li>
+                            {% endif %}
+
+                            {% for num in page_obj.paginator.page_range %}
+                                {% if num == page_obj.number %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ num }}</span>
+                                    </li>
+                                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}{% if filter_status != 'all' %}&status={{ filter_status }}{% endif %}{% if filter_type != 'all' %}&type={{ filter_type }}{% endif %}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if filter_status != 'all' %}&status={{ filter_status }}{% endif %}{% if filter_type != 'all' %}&type={{ filter_type }}{% endif %}">
+                                    Next
+                                </a>
+                            </li>
+                            {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">Next</span>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                </div>
+            </div>
+            {% else %}
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="bi bi-envelope-check" style="font-size: 4rem; color: #ccc;"></i>
+                    <p class="text-muted mt-3">No messages sent yet.</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

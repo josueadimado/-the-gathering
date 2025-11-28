@@ -1,0 +1,243 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Attendance Analytics - The Gathering{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1><i class="bi bi-graph-up"></i> Attendance Analytics</h1>
+                <a href="{% url 'dashboard:index' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2">Total Attendance</h6>
+                    <h2 class="mb-0">{{ total_attendance }}</h2>
+                    <small>All time check-ins</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2">Last 30 Days</h6>
+                    <h2 class="mb-0">{{ recent_count }}</h2>
+                    <small>Recent check-ins</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2">Avg per Event</h6>
+                    <h2 class="mb-0">{{ avg_attendance }}</h2>
+                    <small>Average attendance</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2">Events Tracked</h6>
+                    <h2 class="mb-0">{{ event_attendance|length }}</h2>
+                    <small>With attendance</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Top Events by Attendance -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-trophy"></i> Top Events by Attendance</h5>
+                </div>
+                <div class="card-body">
+                    {% if event_attendance %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Event</th>
+                                    <th>Date</th>
+                                    <th>Attendance</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for event in event_attendance %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ event.name }}</strong>
+                                        {% if event.topic %}
+                                        <br><small class="text-muted">{{ event.topic }}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ event.event_date|date:"M d, Y" }}</td>
+                                    <td>
+                                        <span class="badge bg-primary">{{ event.attendance_count }}</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted mb-0">No attendance data available yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Check-in Methods -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-check-circle"></i> Check-in Methods</h5>
+                </div>
+                <div class="card-body">
+                    {% if check_in_methods %}
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Method</th>
+                                    <th>Count</th>
+                                    <th>Percentage</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for method in check_in_methods %}
+                                <tr>
+                                    <td>
+                                        {% if method.check_in_method == 'qr' %}
+                                        <i class="bi bi-qr-code"></i> QR Code
+                                        {% elif method.check_in_method == 'manual' %}
+                                        <i class="bi bi-search"></i> Manual Search
+                                        {% else %}
+                                        <i class="bi bi-person-check"></i> Admin Entry
+                                        {% endif %}
+                                    </td>
+                                    <td><strong>{{ method.count }}</strong></td>
+                                    <td>
+                                        {% widthratio method.count total_attendance 100 as percentage %}
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar" role="progressbar" style="width: {{ percentage }}%">
+                                                {{ percentage }}%
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted mb-0">No check-in method data available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Check-ins -->
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-clock-history"></i> Recent Check-ins</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_checkins %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Person</th>
+                                    <th>Event</th>
+                                    <th>Check-in Time</th>
+                                    <th>Method</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for checkin in recent_checkins %}
+                                <tr>
+                                    <td><strong>{{ checkin.person.get_full_name }}</strong></td>
+                                    <td>{{ checkin.event.name }}</td>
+                                    <td>{{ checkin.check_in_time|date:"M d, Y g:i A" }}</td>
+                                    <td>
+                                        {% if checkin.check_in_method == 'qr' %}
+                                        <span class="badge bg-success">QR Code</span>
+                                        {% elif checkin.check_in_method == 'manual' %}
+                                        <span class="badge bg-info">Manual</span>
+                                        {% else %}
+                                        <span class="badge bg-warning">Admin</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted mb-0">No recent check-ins.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attendance Trend (Last 30 Days) -->
+    {% if attendance_by_day %}
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-bar-chart"></i> Attendance Trend (Last 30 Days)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Check-ins</th>
+                                    <th>Visual</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for day in attendance_by_day %}
+                                <tr>
+                                    <td>{{ day.day|date:"M d, Y" }}</td>
+                                    <td><strong>{{ day.count }}</strong></td>
+                                    <td>
+                                        {% widthratio day.count recent_count 100 as bar_width %}
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar bg-primary" role="progressbar" style="width: {% if recent_count > 0 %}{{ bar_width }}{% else %}0{% endif %}%">
+                                                {{ day.count }}
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+

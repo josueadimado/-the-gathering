@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ person.get_full_name }} - The Gathering{% endblock %}
+
+{% block page_title %}Person Details{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{% url 'people:list' %}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to List
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">{{ person.get_full_name }}</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">First Name:</dt>
+                    <dd class="col-sm-8">{{ person.first_name }}</dd>
+                    
+                    <dt class="col-sm-4">Last Name:</dt>
+                    <dd class="col-sm-8">{{ person.last_name }}</dd>
+                    
+                    <dt class="col-sm-4">Phone Number:</dt>
+                    <dd class="col-sm-8">{{ person.phone_number }}</dd>
+                    
+                    <dt class="col-sm-4">Email:</dt>
+                    <dd class="col-sm-8">{{ person.email|default:"—" }}</dd>
+                    
+                    <dt class="col-sm-4">Date Registered:</dt>
+                    <dd class="col-sm-8">{{ person.date_registered|date:"F d, Y" }}</dd>
+                    
+                    <dt class="col-sm-4">Status:</dt>
+                    <dd class="col-sm-8">
+                        {% if person.is_active %}
+                        <span class="badge bg-success">Active</span>
+                        {% else %}
+                        <span class="badge bg-secondary">Inactive</span>
+                        {% endif %}
+                    </dd>
+                    
+                    {% if person.notes %}
+                    <dt class="col-sm-4">Notes:</dt>
+                    <dd class="col-sm-8">{{ person.notes }}</dd>
+                    {% endif %}
+                </dl>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h6 class="mb-0">Quick Actions</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'people:update' person.pk %}" class="btn btn-primary">
+                        <i class="bi bi-pencil-square"></i> Edit Details
+                    </a>
+                    <a href="{% url 'attendance:person_history' person.pk %}" class="btn btn-info">
+                        <i class="bi bi-calendar-check"></i> View Attendance History
+                    </a>
+                    <a href="{% url 'admin:people_person_change' person.pk %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-gear"></i> Advanced (Admin)
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
