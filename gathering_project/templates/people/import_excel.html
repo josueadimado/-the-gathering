@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Import People from Excel - The Gathering{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-file-earmark-spreadsheet"></i> Import People from Excel
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h5><i class="bi bi-info-circle"></i> Instructions</h5>
+                        <ul class="mb-0">
+                            <li>Upload an Excel file (.xlsx or .xls) with the following columns:</li>
+                            <li><strong>Name</strong> - Full name of the person (required)</li>
+                            <li><strong>Country</strong> - Country code (optional: Ghana, Togo, etc.)</li>
+                            <li><strong>Contact</strong> - Phone number (required)</li>
+                            <li>The first row should contain column headers</li>
+                            <li>People will be created or updated based on phone number</li>
+                        </ul>
+                    </div>
+
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.excel_file.id_for_label }}" class="form-label">
+                                {{ form.excel_file.label }}
+                            </label>
+                            {{ form.excel_file }}
+                            {% if form.excel_file.help_text %}
+                                <div class="form-text">{{ form.excel_file.help_text }}</div>
+                            {% endif %}
+                            {% if form.excel_file.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.excel_file.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'people:list' %}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-upload"></i> Upload and Import
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card mt-3 shadow-sm">
+                <div class="card-body">
+                    <h5><i class="bi bi-lightbulb"></i> Tips</h5>
+                    <ul class="mb-0">
+                        <li>If a person with the same phone number already exists, their information will be updated</li>
+                        <li>Rows without contact information will be skipped</li>
+                        <li>Phone numbers will be automatically formatted to E.164 format (+233XXXXXXXXX for Ghana)</li>
+                        <li>After import, you'll see a summary of created, updated, and skipped records</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
