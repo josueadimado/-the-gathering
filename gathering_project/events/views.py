@@ -111,14 +111,16 @@ def event_qr_code(request, pk):
             border=4,
         )
         
-        # QR code data contains the event check-in URL
+        # QR code data contains the event self-check-in URL (public access)
         from django.urls import reverse
         try:
-            check_in_url = reverse('attendance:check_in')
-            qr_data = request.build_absolute_uri(check_in_url + f'?event={event.pk}')
-        except:
-            # Fallback to simple event ID if URL reverse fails
-            qr_data = str(event.pk)
+            # Use self_check_in which is public (no login required)
+            self_check_in_url = reverse('attendance:self_check_in')
+            qr_data = request.build_absolute_uri(self_check_in_url + f'?event={event.pk}')
+        except Exception as url_error:
+            # If URL reverse fails, construct the URL manually
+            base_url = request.build_absolute_uri('/')
+            qr_data = f"{base_url}attendance/self-check-in/?event={event.pk}"
         
         qr.add_data(qr_data)
         qr.make(fit=True)
