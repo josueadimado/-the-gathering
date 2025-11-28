@@ -1,0 +1,36 @@
+# Django Web Framework
+Django==4.2.7
+
+# Database
+psycopg2-binary==2.9.9  # PostgreSQL adapter (for production)
+
+# Image Processing (for QR codes and profile pictures)
+Pillow==10.1.0
+
+# QR Code Generation
+qrcode[pil]==7.4.2
+pyqrcode==1.2.1
+
+# Background Tasks (for scheduled messaging)
+celery==5.3.4
+django-celery-beat==2.5.0
+redis==5.0.1  # Message broker for Celery
+
+# Messaging APIs
+twilio==8.10.0  # For SMS/WhatsApp via Twilio
+
+# HTTP Requests (for API calls)
+requests==2.31.0
+
+# Environment Variables Management
+python-decouple==3.8
+
+# Date/Time Utilities
+python-dateutil==2.8.2
+
+# Excel Export (for future enhancements)
+openpyxl==3.1.2
+
+# Development Tools
+django-debug-toolbar==4.2.0  # Debugging tool (development only)
+

@@ -1,59 +1,61 @@
-# The Gathering - Django Project
+# The Gathering Attendance & Messaging System
 
-This is the Django project folder for The Gathering Attendance & Messaging System.
+## 📚 Documentation
+- **[PROJECT_PLAN.md](PROJECT_PLAN.md)** - Detailed project plan with technical specifications, development phases, and architecture
+- This README - Quick overview and reference
 
-## Quick Start
+---
 
-1. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
+## 1. Project Overview
+This project aims to build a Django-based system for The Gathering to handle public registration, event reminders via WhatsApp/SMS, QR-based check-in attendance, and feedback collection. The system will also include analytics for leadership.
 
-2. **Set up environment variables** (create `.env` file):
-   ```
-   SECRET_KEY=your-secret-key-here
-   DEBUG=True
-   ALLOWED_HOSTS=localhost,127.0.0.1
-   ```
+## 2. Objectives
+- Allow users to register without accounts
+- Automate event reminders
+- Enable QR or search-based attendance check-in
+- Collect suggestions and prayer requests
+- Provide analytics dashboards
 
-3. **Run migrations**:
-   ```bash
-   python manage.py makemigrations
-   python manage.py migrate
-   ```
+## 3. System Architecture
+The system is divided into modules:
+- **Accounts**: For admin users
+- **People**: Public registration data
+- **Events**: Weekly gatherings and special meetings
+- **Attendance**: Check-in records
+- **Feedback**: Suggestions and prayer requests
+- **Messaging**: Templates, reminders, logs
+- **Dashboard**: Analytics
 
-4. **Create superuser**:
-   ```bash
-   python manage.py createsuperuser
-   ```
+## 4. Key Flows
+1. Registration (no login)
+2. QR-based or manual attendance check-in
+3. Automatic reminders for upcoming events
+4. Public feedback forms
+5. Admin dashboards
 
-5. **Run server**:
-   ```bash
-   python manage.py runserver
-   ```
+## 5. MVP Scope
+- Registration form
+- Event creation
+- Check-in search + QR entry
+- Messaging templates
+- Basic analytics
+- Feedback forms
 
-6. **Access admin panel**:
-   ```
-   http://127.0.0.1:8000/admin/
-   ```
+## 6. Future Enhancements
+- Personal QR codes
+- Mobile app API
+- Advanced analytics
+- Excel export
 
-## Project Structure
+---
 
-- `gathering_project/` - Main Django project configuration
-- `accounts/` - Admin authentication
-- `people/` - Public registration
-- `events/` - Event management
-- `attendance/` - Check-in system
-- `feedback/` - Feedback collection
-- `messaging/` - Message templates & sending
-- `dashboard/` - Analytics dashboard
-- `templates/` - HTML templates
-- `static/` - CSS, JavaScript, images
-- `media/` - User uploaded files
+## Quick Start (Once Development Begins)
+1. Review [PROJECT_PLAN.md](PROJECT_PLAN.md) for detailed specifications
+2. Set up development environment
+3. Follow development phases outlined in project plan
+4. Test each module before moving to next phase
 
-## Documentation
+---
 
-- See `../SETUP.md` for detailed setup instructions
-- See `../PROJECT_PLAN.md` for complete project specifications
-- See `../QUICK_REFERENCE.md` for quick reference guide
-
+**Status**: Planning Phase ✅  
+**Next Step**: Review PROJECT_PLAN.md and answer questions before starting development
