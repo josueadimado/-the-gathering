@@ -96,6 +96,13 @@ def event_qr_code(request, pk):
     try:
         event = get_object_or_404(Event, pk=pk)
         
+        # Import here to avoid issues if Pillow is not installed
+        try:
+            from PIL import Image
+        except ImportError:
+            return HttpResponse("Pillow is not installed. Please install it: pip install Pillow", 
+                              content_type='text/plain', status=500)
+        
         # Create QR code with event check-in URL
         qr = qrcode.QRCode(
             version=1,
@@ -106,7 +113,13 @@ def event_qr_code(request, pk):
         
         # QR code data contains the event check-in URL
         from django.urls import reverse
-        qr_data = request.build_absolute_uri(reverse('attendance:check_in') + f'?event={event.pk}')
+        try:
+            check_in_url = reverse('attendance:check_in')
+            qr_data = request.build_absolute_uri(check_in_url + f'?event={event.pk}')
+        except:
+            # Fallback to simple event ID if URL reverse fails
+            qr_data = str(event.pk)
+        
         qr.add_data(qr_data)
         qr.make(fit=True)
         
@@ -117,15 +130,20 @@ def event_qr_code(request, pk):
         buffer = io.BytesIO()
         img.save(buffer, format='PNG')
         buffer.seek(0)
+        image_data = buffer.getvalue()
+        buffer.close()
         
-        # Return as HTTP response
-        response = HttpResponse(buffer.getvalue(), content_type='image/png')
+        # Return as HTTP response with proper headers
+        response = HttpResponse(image_data, content_type='image/png')
         response['Content-Disposition'] = f'inline; filename="event_{event.pk}_qr.png"'
+        response['Cache-Control'] = 'public, max-age=3600'
         return response
+        
     except Exception as e:
-        # If QR code generation fails, return error message
-        from django.http import HttpResponse
-        return HttpResponse(f"Error generating QR code: {str(e)}", content_type='text/plain', status=500)
+        # Log the error and return a proper error response
+        import traceback
+        error_msg = f"Error generating QR code: {str(e)}\n{traceback.format_exc()}"
+        return HttpResponse(error_msg, content_type='text/plain', status=500)
 
 
 def event_qr_scan(request, pk):
